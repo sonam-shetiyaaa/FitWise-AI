@@ -17,9 +17,15 @@ import { ChatbotPage } from './pages/ChatbotPage';
 import { Sparkles, CheckCircle2, AlertCircle, Info } from 'lucide-react';
 
 const MainAppContent = () => {
-  const { currentPage, navigateTo, toast } = useApp();
+  const { currentPage, navigateTo, toast, isLoggedIn } = useApp();
 
   const renderCurrentPage = () => {
+    // If not logged in and requesting private features, show login page
+    const protectedPages = ['dashboard', 'workout', 'nutrition', 'progress', 'profile-setup', 'chatbot'];
+    if (!isLoggedIn && protectedPages.includes(currentPage)) {
+      return <AuthPage />;
+    }
+
     switch (currentPage) {
       case 'landing':
         return <LandingPage />;
@@ -38,7 +44,7 @@ const MainAppContent = () => {
       case 'chatbot':
         return <ChatbotPage />;
       default:
-        return <LandingPage />;
+        return <AuthPage />;
     }
   };
 

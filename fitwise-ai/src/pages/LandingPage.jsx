@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 
 export const LandingPage = () => {
-  const { navigateTo } = useApp();
+  const { navigateTo, isLoggedIn } = useApp();
 
   const features = [
     {
@@ -79,7 +79,7 @@ export const LandingPage = () => {
 
           <div className="hero-actions">
             <button
-              onClick={() => navigateTo('profile-setup')}
+              onClick={() => navigateTo(isLoggedIn ? 'dashboard' : 'login')}
               className="btn btn-primary btn-lg hero-cta-btn"
             >
               <span>Get Started</span>
@@ -131,6 +131,10 @@ export const LandingPage = () => {
                   key={index}
                   className="feature-card glass-panel"
                   onClick={() => {
+                    if (!isLoggedIn) {
+                      navigateTo('login');
+                      return;
+                    }
                     if (feat.title === "AI Coaching") navigateTo('chatbot');
                     else if (feat.title === "Personalized Workouts") navigateTo('workout');
                     else if (feat.title === "Nutrition Guidance") navigateTo('nutrition');
@@ -204,12 +208,12 @@ export const LandingPage = () => {
                 Join thousands of athletes, busy professionals, and fitness enthusiasts crushing their goals with FitWise AI.
               </p>
               <div className="cta-buttons">
-                <button onClick={() => navigateTo('profile-setup')} className="btn btn-primary btn-lg">
+                <button onClick={() => navigateTo(isLoggedIn ? 'dashboard' : 'login')} className="btn btn-primary btn-lg">
                   <span>Start Your Personalized Plan</span>
                   <ArrowRight size={20} />
                 </button>
-                <button onClick={() => navigateTo('dashboard')} className="btn btn-secondary btn-lg">
-                  <span>Preview Live Dashboard</span>
+                <button onClick={() => navigateTo(isLoggedIn ? 'dashboard' : 'login')} className="btn btn-secondary btn-lg">
+                  <span>Sign In & Live Dashboard</span>
                 </button>
               </div>
             </div>

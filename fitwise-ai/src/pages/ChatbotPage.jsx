@@ -410,7 +410,7 @@ export const ChatbotPage = () => {
                       <span className="badge badge-emerald">Online & Calibrated</span>
                     </div>
                     <p className="coach-context">
-                      Trained on sports biomechanics & nutrition • {user.name} ({user.fitnessGoal})
+                      Trained on sports biomechanics & nutrition • {user?.name || "Athlete"} ({user?.fitnessGoal || "General Fitness"})
                     </p>
                   </div>
                 </div>

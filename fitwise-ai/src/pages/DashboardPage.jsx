@@ -87,7 +87,7 @@ export const DashboardPage = () => {
               <span>{progress.workoutStreak}-Day Streak Active</span>
             </div>
             <h1 className="greeting-title">
-              {getGreeting()}, <span className="text-gradient">{user.name.split(' ')[0]}</span>!
+              {getGreeting()}, <span className="text-gradient">{(user?.name || "Athlete").split(' ')[0]}</span>!
             </h1>
             <p className="greeting-desc">
               Your body is dialed in for <strong>{user.fitnessGoal}</strong>. Today's focus is mechanical tension, clean hydration, and quality rest.

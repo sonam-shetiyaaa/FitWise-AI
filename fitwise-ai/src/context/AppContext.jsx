@@ -7,15 +7,34 @@ import {
   sampleChatKnowledge
 } from '../data/mockData';
 
-const AppContext = createContext(null);
+const defaultGuestProfile = {
+  name: "",
+  email: "",
+  age: 26,
+  gender: "Not specified",
+  height: 175,
+  weight: 70,
+  targetWeight: 68,
+  fitnessGoal: "General Fitness & Health",
+  activityLevel: "Moderately Active (3-5 sessions/week)",
+  fitnessExperience: "Beginner (< 6 months)",
+  workoutLocation: "Commercial Gym",
+  workoutDuration: "45-60 min",
+  foodPreference: "High-Protein Balanced",
+  dietaryRestrictions: "None",
+  preferredCuisine: "Balanced",
+  waterIntake: "3.0 Liters",
+  sleepDuration: "7-8 hours",
+  avatarUrl: ""
+};
 
 export const AppProvider = ({ children }) => {
-  // Navigation State
-  const [currentPage, setCurrentPage] = useState('landing');
+  // Navigation State - defaults to 'login'
+  const [currentPage, setCurrentPage] = useState('login');
   
-  // User Profile & Auth
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
-  const [user, setUser] = useState(initialProfile);
+  // User Profile & Auth - unauthenticated by default
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState(defaultGuestProfile);
 
   // Workouts State
   const [workouts, setWorkouts] = useState(initialWorkouts);
@@ -100,32 +119,55 @@ export const AppProvider = ({ children }) => {
   };
 
   // Auth Handlers (Frontend mock)
-  const login = (email, password) => {
+  const login = (email, password, displayName) => {
     setIsLoggedIn(true);
-    setUser((prev) => ({
-      ...prev,
-      email: email || prev.email,
-      name: email ? email.split('@')[0].replace('.', ' ') : prev.name
-    }));
-    showToast("Welcome back! Signed in successfully.", "success");
+    let resolvedName = displayName;
+    if (!resolvedName && email) {
+      const prefix = email.split('@')[0];
+      resolvedName = prefix
+        .replace(/[._-]/g, ' ')
+        .split(' ')
+        .filter(Boolean)
+        .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+        .join(' ');
+    }
+    if (!resolvedName) resolvedName = "Athlete";
+
+    if (email === "alex.morgan@fitwise.ai" || resolvedName === "Alex Morgan") {
+      setUser({
+        ...initialProfile,
+        name: "Alex Morgan",
+        email: "alex.morgan@fitwise.ai"
+      });
+    } else {
+      setUser((prev) => ({
+        ...prev,
+        email: email || "athlete@fitwise.ai",
+        name: resolvedName
+      }));
+    }
+
+    showToast(`Welcome back, ${resolvedName}! Signed in successfully.`, "success");
     navigateTo('dashboard');
   };
 
   const register = (data) => {
     setIsLoggedIn(true);
+    const resolvedName = data.name || (data.email ? data.email.split('@')[0] : "Athlete");
     setUser((prev) => ({
       ...prev,
-      name: data.name || prev.name,
-      email: data.email || prev.email
+      name: resolvedName,
+      email: data.email || "athlete@fitwise.ai"
     }));
-    showToast("Account created! Let's personalize your fitness profile.", "success");
+    showToast(`Account created for ${resolvedName}! Let's personalize your fitness profile.`, "success");
     navigateTo('profile-setup');
   };
 
   const logout = () => {
     setIsLoggedIn(false);
+    setUser(defaultGuestProfile);
     showToast("Logged out successfully.", "info");
-    navigateTo('landing');
+    navigateTo('login');
   };
 
   // Profile Update Handler

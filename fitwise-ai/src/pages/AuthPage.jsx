@@ -28,21 +28,29 @@ export const AuthPage = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (isLoginTab) {
-      login(email || "alex.morgan@fitwise.ai", password);
+      if (!email.trim()) {
+        alert("Please enter your email address.");
+        return;
+      }
+      login(email.trim(), password);
     } else {
+      if (!name.trim()) {
+        alert("Please enter your full name.");
+        return;
+      }
       if (password !== confirmPassword) {
         alert("Passwords do not match!");
         return;
       }
       register({
-        name: name || "Alex Morgan",
-        email: email || "alex.morgan@fitwise.ai"
+        name: name.trim(),
+        email: email.trim() || `${name.trim().toLowerCase().replace(/\s+/g, '.')}@fitwise.ai`
       });
     }
   };
 
   const handleDemoLogin = () => {
-    login("alex.morgan@fitwise.ai", "demo1234");
+    login("alex.morgan@fitwise.ai", "demo1234", "Alex Morgan");
   };
 
   return (
@@ -93,7 +101,7 @@ export const AuthPage = () => {
                     type="text"
                     required
                     className="form-input"
-                    placeholder="Alex Morgan"
+                    placeholder="e.g. John Doe"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                   />
@@ -109,7 +117,7 @@ export const AuthPage = () => {
                   type="email"
                   required
                   className="form-input"
-                  placeholder="alex.morgan@fitwise.ai"
+                  placeholder="your.email@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
@@ -201,10 +209,36 @@ export const AuthPage = () => {
           <p className="privacy-note">
             By signing in, you agree to our Terms of Service & Privacy Policy.
           </p>
+
+          <div className="landing-link-wrap">
+            <button
+              type="button"
+              onClick={() => navigateTo('landing')}
+              className="btn-link-landing"
+            >
+              ← Explore FitWise AI Overview & Features
+            </button>
+          </div>
         </div>
       </div>
 
       <style>{`
+        .landing-link-wrap {
+          text-align: center;
+          margin-top: 14px;
+        }
+        .btn-link-landing {
+          background: none;
+          border: none;
+          color: var(--text-dim);
+          font-size: 0.85rem;
+          cursor: pointer;
+          transition: var(--ease-smooth);
+        }
+        .btn-link-landing:hover {
+          color: #34d399;
+          text-decoration: underline;
+        }
         .auth-page {
           min-height: calc(100vh - 150px);
           display: flex;

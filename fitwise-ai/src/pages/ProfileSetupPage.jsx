@@ -139,7 +139,7 @@ export const ProfileSetupPage = () => {
                         type="text"
                         required
                         className="form-input"
-                        placeholder="Alex Morgan"
+                        placeholder="e.g. John Doe"
                         value={formData.name}
                         onChange={(e) => handleChange('name', e.target.value)}
                       />
@@ -425,7 +425,7 @@ export const ProfileSetupPage = () => {
                 <span className="preview-badge">Live AI Model Preview</span>
               </div>
 
-              <h4 className="athlete-name">{formData.name || 'Alex Morgan'}</h4>
+              <h4 className="athlete-name">{formData.name || 'Your Profile'}</h4>
               <span className="athlete-goal-tag">{formData.fitnessGoal}</span>
 
               {/* Metric 1: BMI */}

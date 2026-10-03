@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 
 export const Navbar = () => {
-  const { currentPage, navigateTo, isLoggedIn, user, logout } = useApp();
+  const { currentPage, navigateTo, isLoggedIn, user, logout, showToast } = useApp();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navLinks = [
@@ -29,6 +29,14 @@ export const Navbar = () => {
   ];
 
   const handleNavClick = (pageId) => {
+    if (!isLoggedIn && pageId !== 'landing' && pageId !== 'login') {
+      navigateTo('login');
+      if (showToast) {
+        showToast(`Please sign in or register to access ${pageId.charAt(0).toUpperCase() + pageId.slice(1)}`, 'info');
+      }
+      setMobileMenuOpen(false);
+      return;
+    }
     navigateTo(pageId);
     setMobileMenuOpen(false);
   };
@@ -76,11 +84,11 @@ export const Navbar = () => {
                 title="Profile & Settings"
               >
                 <div className="avatar-circle">
-                  {user.name ? user.name.charAt(0) : 'U'}
+                  {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
                 </div>
                 <div className="user-info-text">
-                  <span className="user-name">{user.name}</span>
-                  <span className="user-goal">{user.fitnessGoal.split('&')[0]}</span>
+                  <span className="user-name">{user?.name || "Athlete"}</span>
+                  <span className="user-goal">{user?.fitnessGoal ? user.fitnessGoal.split('&')[0] : 'Fitness'}</span>
                 </div>
               </button>
 
@@ -102,7 +110,7 @@ export const Navbar = () => {
                 <span>Log In</span>
               </button>
               <button
-                onClick={() => handleNavClick('profile-setup')}
+                onClick={() => handleNavClick('login')}
                 className="btn btn-primary btn-sm"
               >
                 <span>Get Started</span>
@@ -172,7 +180,7 @@ export const Navbar = () => {
                 <button onClick={logout} className="mobile-nav-link text-danger">
                   <div className="link-icon-title">
                     <LogOut size={20} />
-                    <span>Log Out ({user.name})</span>
+                    <span>Log Out ({user?.name || "Athlete"})</span>
                   </div>
                 </button>
               </>
@@ -181,7 +189,7 @@ export const Navbar = () => {
                 <button onClick={() => handleNavClick('login')} className="btn btn-secondary w-full">
                   Log In
                 </button>
-                <button onClick={() => handleNavClick('profile-setup')} className="btn btn-primary w-full">
+                <button onClick={() => handleNavClick('login')} className="btn btn-primary w-full">
                   Get Started Free
                 </button>
               </div>
