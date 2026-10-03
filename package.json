@@ -1,0 +1,17 @@
+{
+  "name": "fitwise-ai-workspace",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "npm --prefix fitwise-ai run dev",
+    "build": "npm --prefix fitwise-ai run build",
+    "preview": "npm --prefix fitwise-ai run preview",
+    "server": "npm --prefix fitwise-ai run server"
+  },
+  "dependencies": {
+    "@google/genai": "^2.27.0",
+    "cors": "^2.8.6",
+    "dotenv": "^18.0.5",
+    "express": "^5.2.1"
+  }
+}
