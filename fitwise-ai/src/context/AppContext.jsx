@@ -28,6 +28,8 @@ const defaultGuestProfile = {
   avatarUrl: ""
 };
 
+const AppContext = createContext(null);
+
 export const AppProvider = ({ children }) => {
   // Navigation State - defaults to 'login'
   const [currentPage, setCurrentPage] = useState('login');
