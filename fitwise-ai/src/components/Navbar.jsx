@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 
 export const Navbar = () => {
-  const { currentPage, navigateTo, isLoggedIn, user, logout, showToast } = useApp();
+  const { currentPage, navigateTo, isLoggedIn, user, logout, showToast, openAuthModal } = useApp();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navLinks = [
@@ -29,8 +29,8 @@ export const Navbar = () => {
   ];
 
   const handleNavClick = (pageId) => {
-    if (!isLoggedIn && pageId !== 'landing' && pageId !== 'login') {
-      navigateTo('login');
+    if (!isLoggedIn && pageId !== 'landing') {
+      openAuthModal('signin');
       if (showToast) {
         showToast(`Please sign in or register to access ${pageId.charAt(0).toUpperCase() + pageId.slice(1)}`, 'info');
       }
@@ -103,14 +103,14 @@ export const Navbar = () => {
           ) : (
             <div className="guest-actions">
               <button
-                onClick={() => handleNavClick('login')}
+                onClick={() => openAuthModal('signin')}
                 className="btn btn-secondary btn-sm"
               >
                 <LogIn size={16} />
-                <span>Log In</span>
+                <span>Sign In</span>
               </button>
               <button
-                onClick={() => handleNavClick('login')}
+                onClick={() => openAuthModal('register')}
                 className="btn btn-primary btn-sm"
               >
                 <span>Get Started</span>
@@ -186,11 +186,23 @@ export const Navbar = () => {
               </>
             ) : (
               <div className="mobile-auth-btns">
-                <button onClick={() => handleNavClick('login')} className="btn btn-secondary w-full">
-                  Log In
+                <button
+                  onClick={() => {
+                    openAuthModal('signin');
+                    setMobileMenuOpen(false);
+                  }}
+                  className="btn btn-secondary w-full"
+                >
+                  Sign In (Existing User)
                 </button>
-                <button onClick={() => handleNavClick('login')} className="btn btn-primary w-full">
-                  Get Started Free
+                <button
+                  onClick={() => {
+                    openAuthModal('register');
+                    setMobileMenuOpen(false);
+                  }}
+                  className="btn btn-primary w-full"
+                >
+                  Get Started (New User)
                 </button>
               </div>
             )}

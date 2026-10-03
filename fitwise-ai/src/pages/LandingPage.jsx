@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 
 export const LandingPage = () => {
-  const { navigateTo, isLoggedIn } = useApp();
+  const { navigateTo, isLoggedIn, openAuthModal } = useApp();
 
   const features = [
     {
@@ -79,7 +79,10 @@ export const LandingPage = () => {
 
           <div className="hero-actions">
             <button
-              onClick={() => navigateTo(isLoggedIn ? 'dashboard' : 'login')}
+              onClick={() => {
+                if (isLoggedIn) navigateTo('dashboard');
+                else openAuthModal('register');
+              }}
               className="btn btn-primary btn-lg hero-cta-btn"
             >
               <span>Get Started</span>
@@ -132,7 +135,7 @@ export const LandingPage = () => {
                   className="feature-card glass-panel"
                   onClick={() => {
                     if (!isLoggedIn) {
-                      navigateTo('login');
+                      openAuthModal('signin');
                       return;
                     }
                     if (feat.title === "AI Coaching") navigateTo('chatbot');
@@ -208,11 +211,23 @@ export const LandingPage = () => {
                 Join thousands of athletes, busy professionals, and fitness enthusiasts crushing their goals with FitWise AI.
               </p>
               <div className="cta-buttons">
-                <button onClick={() => navigateTo(isLoggedIn ? 'dashboard' : 'login')} className="btn btn-primary btn-lg">
+                <button
+                  onClick={() => {
+                    if (isLoggedIn) navigateTo('dashboard');
+                    else openAuthModal('register');
+                  }}
+                  className="btn btn-primary btn-lg"
+                >
                   <span>Start Your Personalized Plan</span>
                   <ArrowRight size={20} />
                 </button>
-                <button onClick={() => navigateTo(isLoggedIn ? 'dashboard' : 'login')} className="btn btn-secondary btn-lg">
+                <button
+                  onClick={() => {
+                    if (isLoggedIn) navigateTo('dashboard');
+                    else openAuthModal('signin');
+                  }}
+                  className="btn btn-secondary btn-lg"
+                >
                   <span>Sign In & Live Dashboard</span>
                 </button>
               </div>

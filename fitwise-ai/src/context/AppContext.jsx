@@ -31,12 +31,25 @@ const defaultGuestProfile = {
 const AppContext = createContext(null);
 
 export const AppProvider = ({ children }) => {
-  // Navigation State - defaults to 'login'
-  const [currentPage, setCurrentPage] = useState('login');
+  // Navigation State - defaults to 'landing' page
+  const [currentPage, setCurrentPage] = useState('landing');
   
   // User Profile & Auth - unauthenticated by default
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(defaultGuestProfile);
+
+  // Auth Dialog Modal State (for "Get Started" and "Sign In")
+  const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [authModalTab, setAuthModalTab] = useState('signin'); // 'signin' or 'register'
+
+  const openAuthModal = (tab = 'signin') => {
+    setAuthModalTab(tab);
+    setAuthModalOpen(true);
+  };
+
+  const closeAuthModal = () => {
+    setAuthModalOpen(false);
+  };
 
   // Workouts State
   const [workouts, setWorkouts] = useState(initialWorkouts);
@@ -150,6 +163,7 @@ export const AppProvider = ({ children }) => {
     }
 
     showToast(`Welcome back, ${resolvedName}! Signed in successfully.`, "success");
+    closeAuthModal();
     navigateTo('dashboard');
   };
 
@@ -162,6 +176,7 @@ export const AppProvider = ({ children }) => {
       email: data.email || "athlete@fitwise.ai"
     }));
     showToast(`Account created for ${resolvedName}! Let's personalize your fitness profile.`, "success");
+    closeAuthModal();
     navigateTo('profile-setup');
   };
 
@@ -169,7 +184,7 @@ export const AppProvider = ({ children }) => {
     setIsLoggedIn(false);
     setUser(defaultGuestProfile);
     showToast("Logged out successfully.", "info");
-    navigateTo('login');
+    navigateTo('landing');
   };
 
   // Profile Update Handler
@@ -549,7 +564,12 @@ export const AppProvider = ({ children }) => {
         sendChatMessage,
         clearChat,
         toast,
-        showToast
+        showToast,
+        authModalOpen,
+        openAuthModal,
+        closeAuthModal,
+        authModalTab,
+        setAuthModalTab
       }}
     >
       {children}

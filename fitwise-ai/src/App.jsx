@@ -13,17 +13,19 @@ import { NutritionPage } from './pages/NutritionPage';
 import { ProgressPage } from './pages/ProgressPage';
 import { ChatbotPage } from './pages/ChatbotPage';
 
+import { AuthModal } from './components/AuthModal';
+
 // Floating Chat trigger icon
 import { Sparkles, CheckCircle2, AlertCircle, Info } from 'lucide-react';
 
 const MainAppContent = () => {
-  const { currentPage, navigateTo, toast, isLoggedIn } = useApp();
+  const { currentPage, navigateTo, toast, isLoggedIn, openAuthModal } = useApp();
 
   const renderCurrentPage = () => {
-    // If not logged in and requesting private features, show login page
+    // If not logged in and requesting private features, show landing page with dialog open
     const protectedPages = ['dashboard', 'workout', 'nutrition', 'progress', 'profile-setup', 'chatbot'];
     if (!isLoggedIn && protectedPages.includes(currentPage)) {
-      return <AuthPage />;
+      return <LandingPage />;
     }
 
     switch (currentPage) {
@@ -44,7 +46,7 @@ const MainAppContent = () => {
       case 'chatbot':
         return <ChatbotPage />;
       default:
-        return <AuthPage />;
+        return <LandingPage />;
     }
   };
 
@@ -56,11 +58,20 @@ const MainAppContent = () => {
         {renderCurrentPage()}
       </main>
 
-      {/* Floating AI Coach Trigger Button (visible when not on chatbot or auth page) */}
-      {currentPage !== 'chatbot' && currentPage !== 'login' && (
+      {/* Auth Dialog Modal */}
+      <AuthModal />
+
+      {/* Floating AI Coach Trigger Button */}
+      {currentPage !== 'chatbot' && (
         <button
           className="floating-ai-button"
-          onClick={() => navigateTo('chatbot')}
+          onClick={() => {
+            if (isLoggedIn) {
+              navigateTo('chatbot');
+            } else {
+              openAuthModal('signin');
+            }
+          }}
           title="Open AI Fitness Coach"
           aria-label="Open AI Fitness Coach"
         >

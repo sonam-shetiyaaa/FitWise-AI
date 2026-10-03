@@ -3,7 +3,7 @@ import { useApp } from '../context/AppContext';
 import { Flame, Sparkles, Heart, Shield, Award, Activity } from 'lucide-react';
 
 export const Footer = () => {
-  const { navigateTo } = useApp();
+  const { navigateTo, isLoggedIn, openAuthModal } = useApp();
 
   return (
     <footer className="footer-wrap">
@@ -44,7 +44,7 @@ export const Footer = () => {
             <h4 className="footer-col-title">Personalization</h4>
             <ul className="footer-links">
               <li><button onClick={() => navigateTo('profile-setup')}>Profile Setup</button></li>
-              <li><button onClick={() => navigateTo('login')}>Sign In / Register</button></li>
+              <li><button onClick={() => { if (isLoggedIn) navigateTo('profile-setup'); else openAuthModal('signin'); }}>Sign In / Register</button></li>
               <li><button onClick={() => navigateTo('workout')}>Exercise Library</button></li>
               <li><button onClick={() => navigateTo('nutrition')}>Meal Logger</button></li>
             </ul>
