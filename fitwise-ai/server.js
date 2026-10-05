@@ -5,10 +5,11 @@ import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
 
-dotenv.config();
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+dotenv.config({ path: path.join(__dirname, ".env") });
+dotenv.config();
 
 const app = express();
 
@@ -253,6 +254,132 @@ app.get("/api/health", (req, res) => {
         geminiKeyConfigured: !!apiKey,
         timestamp: new Date().toISOString()
     });
+});
+
+// User Storage & Auth Routes
+const usersFilePath = path.join(__dirname, "users.json");
+
+function loadUsers() {
+    try {
+        if (fs.existsSync(usersFilePath)) {
+            const raw = fs.readFileSync(usersFilePath, "utf-8");
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        }
+    } catch (e) {
+        console.error("Error reading users.json:", e);
+    }
+    const defaultUsers = [
+        {
+            name: "Alex Morgan",
+            email: "alex.morgan@fitwise.ai",
+            password: "demo1234",
+            profile: {
+                name: "Alex Morgan",
+                email: "alex.morgan@fitwise.ai",
+                fitnessGoal: "Muscle Gain & Fat Loss",
+                activityLevel: "Moderately Active (3-5 sessions/week)"
+            },
+            createdAt: new Date().toISOString()
+        }
+    ];
+    saveUsers(defaultUsers);
+    return defaultUsers;
+}
+
+function saveUsers(users) {
+    try {
+        fs.writeFileSync(usersFilePath, JSON.stringify(users, null, 2), "utf-8");
+    } catch (e) {
+        console.error("Error writing users.json:", e);
+    }
+}
+
+app.post("/api/auth/register", (req, res) => {
+    const { name, email, password } = req.body;
+    const cleanEmail = (email || "").trim().toLowerCase();
+    const cleanPassword = (password || "").trim();
+    const cleanName = (name || "").trim();
+
+    if (!cleanName || !cleanEmail || !cleanPassword) {
+        return res.status(400).json({ success: false, error: "Name, email, and password are required." });
+    }
+    if (cleanPassword.length < 6) {
+        return res.status(400).json({ success: false, error: "Password must be at least 6 characters long." });
+    }
+
+    const users = loadUsers();
+    const exists = users.find(u => (u.email || "").toLowerCase() === cleanEmail);
+    if (exists) {
+        return res.status(400).json({ success: false, error: `An account with "${cleanEmail}" already exists. Please sign in instead.` });
+    }
+
+    const newUser = {
+        name: cleanName,
+        email: cleanEmail,
+        password: cleanPassword,
+        profile: {
+            name: cleanName,
+            email: cleanEmail
+        },
+        createdAt: new Date().toISOString()
+    };
+    users.push(newUser);
+    saveUsers(users);
+
+    return res.json({ success: true, user: { name: newUser.name, email: newUser.email, profile: newUser.profile } });
+});
+
+app.post("/api/auth/login", (req, res) => {
+    const { email, password } = req.body;
+    const cleanEmail = (email || "").trim().toLowerCase();
+    const cleanPassword = (password || "").trim();
+
+    if (!cleanEmail || !cleanPassword) {
+        return res.status(400).json({ success: false, error: "Email and password are required." });
+    }
+
+    const users = loadUsers();
+    const user = users.find(u => (u.email || "").toLowerCase() === cleanEmail);
+
+    if (!user) {
+        return res.status(404).json({ success: false, error: `No account found with "${cleanEmail}". Please check your email or register.` });
+    }
+
+    if (user.password !== cleanPassword) {
+        return res.status(401).json({ success: false, error: "Incorrect password. Please enter the password you registered with." });
+    }
+
+    return res.json({
+        success: true,
+        user: {
+            name: user.name,
+            email: user.email,
+            profile: user.profile || { name: user.name, email: user.email }
+        }
+    });
+});
+
+app.post("/api/auth/reset-password", (req, res) => {
+    const { email, newPassword } = req.body;
+    const cleanEmail = (email || "").trim().toLowerCase();
+    const cleanPassword = (newPassword || "").trim();
+
+    if (!cleanEmail || !cleanPassword || cleanPassword.length < 6) {
+        return res.status(400).json({ success: false, error: "Valid email and new password (min 6 chars) are required." });
+    }
+
+    const users = loadUsers();
+    const index = users.findIndex(u => (u.email || "").toLowerCase() === cleanEmail);
+    if (index === -1) {
+        return res.status(404).json({ success: false, error: `No account found with "${cleanEmail}".` });
+    }
+
+    users[index].password = cleanPassword;
+    users[index].updatedAt = new Date().toISOString();
+    saveUsers(users);
+
+    return res.json({ success: true, message: "Password updated successfully! You can now sign in." });
 });
 
 app.post("/api/chat", async (req, res) => {

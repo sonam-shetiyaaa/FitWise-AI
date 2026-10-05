@@ -25,7 +25,8 @@ import {
   MessageSquare,
   PanelLeft,
   PanelLeftClose,
-  Maximize2
+  Maximize2,
+  Key
 } from 'lucide-react';
 
 export const ChatbotPage = () => {
@@ -41,7 +42,9 @@ export const ChatbotPage = () => {
     sendChatMessage,
     clearChat,
     user,
-    showToast
+    showToast,
+    geminiApiKey,
+    saveGeminiApiKey
   } = useApp();
 
   const [inputText, setInputText] = useState('');
@@ -54,6 +57,8 @@ export const ChatbotPage = () => {
   );
   const [selectedImage, setSelectedImage] = useState(null);
   const [lightboxImage, setLightboxImage] = useState(null);
+  const [showKeyModal, setShowKeyModal] = useState(false);
+  const [customKeyInput, setCustomKeyInput] = useState(geminiApiKey || '');
 
   const chatAreaRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -418,6 +423,19 @@ export const ChatbotPage = () => {
 
               <div className="chat-header-actions">
                 <button
+                  onClick={() => {
+                    setCustomKeyInput(geminiApiKey || '');
+                    setShowKeyModal(true);
+                  }}
+                  className="btn btn-secondary btn-sm btn-api-key"
+                  title="AI Engine & Gemini API Status"
+                >
+                  <Key size={14} className="text-emerald" />
+                  <span className="api-key-label">AI Engine</span>
+                  <span className="engine-status-pill" />
+                </button>
+
+                <button
                   onClick={createNewChat}
                   className="btn btn-secondary btn-sm btn-header-new"
                   title="Start fresh chat"
@@ -689,6 +707,90 @@ export const ChatbotPage = () => {
               <X size={20} />
             </button>
             <img src={lightboxImage} alt="Expanded view" className="lightbox-img" />
+          </div>
+        </div>
+      )}
+
+      {/* AI Engine & Gemini API Key Modal */}
+      {showKeyModal && (
+        <div className="lightbox-overlay" onClick={() => setShowKeyModal(false)}>
+          <div className="api-key-modal glass-panel" onClick={(e) => e.stopPropagation()}>
+            <div className="api-key-modal-header">
+              <div className="api-key-modal-title">
+                <div className="key-icon-badge">
+                  <Key size={18} className="text-emerald" />
+                </div>
+                <div>
+                  <h3 className="modal-title-text">FitWise AI Engine</h3>
+                  <p className="modal-subtitle-text">Google Gemini & Intelligent Fitness Systems</p>
+                </div>
+              </div>
+              <button className="lightbox-close-btn" onClick={() => setShowKeyModal(false)}>
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="api-key-modal-body">
+              <div className="engine-status-card">
+                <div className="status-top-row">
+                  <span className="live-status-dot pulse" />
+                  <strong>Active Engine: Google Gemini Cloud & Local AI</strong>
+                </div>
+                <p className="status-info-text">
+                  Direct live connection to Google Gemini models (<code>gemini-3.5-flash-lite</code>, <code>gemini-3.8-flash</code>) with automatic fallback to our comprehensive offline biomechanics and nutrition engine.
+                </p>
+              </div>
+
+              <div className="key-input-container">
+                <label className="key-input-label">
+                  Custom Gemini API Key <span>(Optional personal key override)</span>
+                </label>
+                <input
+                  type="password"
+                  className="key-text-input"
+                  placeholder="Paste your Google AI Studio key (starts with AIzaSy...)"
+                  value={customKeyInput}
+                  onChange={(e) => setCustomKeyInput(e.target.value)}
+                />
+                <p className="key-help-text">
+                  A default working key is pre-loaded. If you have your own free Google Gemini API key from AI Studio, paste it here to use your personal quota.
+                </p>
+              </div>
+
+              <a
+                href="https://aistudio.google.com/app/apikey"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="get-gemini-link"
+              >
+                <span>Get a free API key at Google AI Studio</span>
+                <span className="arrow">&rarr;</span>
+              </a>
+            </div>
+
+            <div className="api-key-modal-footer">
+              <button
+                type="button"
+                className="btn btn-secondary btn-sm"
+                onClick={() => {
+                  saveGeminiApiKey('');
+                  setCustomKeyInput('');
+                  setShowKeyModal(false);
+                }}
+              >
+                Reset to Default
+              </button>
+              <button
+                type="button"
+                className="btn btn-primary btn-sm"
+                onClick={() => {
+                  saveGeminiApiKey(customKeyInput);
+                  setShowKeyModal(false);
+                }}
+              >
+                Save & Apply Key
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -1021,6 +1123,191 @@ export const ChatbotPage = () => {
         .btn-header-new:hover {
           background: rgba(16, 185, 129, 0.2);
           color: #ffffff;
+        }
+
+        .btn-api-key {
+          font-size: 0.8rem;
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          background: rgba(16, 185, 129, 0.08);
+          border-color: rgba(16, 185, 129, 0.3);
+          color: #e2e8f0;
+          cursor: pointer;
+        }
+
+        .btn-api-key:hover {
+          background: rgba(16, 185, 129, 0.18);
+          border-color: rgba(16, 185, 129, 0.5);
+          color: #ffffff;
+        }
+
+        .engine-status-pill {
+          width: 7px;
+          height: 7px;
+          border-radius: 50%;
+          background: #10b981;
+          box-shadow: 0 0 8px #10b981;
+          display: inline-block;
+        }
+
+        /* API Key Modal */
+        .api-key-modal {
+          width: 90%;
+          max-width: 520px;
+          background: #0f172a;
+          border: 1px solid rgba(255, 255, 255, 0.12);
+          border-radius: 20px;
+          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+          overflow: hidden;
+          animation: modalFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .api-key-modal-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 20px 24px 16px;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .api-key-modal-title {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+        }
+
+        .key-icon-badge {
+          width: 36px;
+          height: 36px;
+          border-radius: 10px;
+          background: rgba(16, 185, 129, 0.15);
+          border: 1px solid rgba(16, 185, 129, 0.3);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .modal-title-text {
+          font-size: 1.15rem;
+          font-weight: 700;
+          color: #ffffff;
+          margin: 0;
+        }
+
+        .modal-subtitle-text {
+          font-size: 0.75rem;
+          color: var(--text-muted);
+          margin: 2px 0 0 0;
+        }
+
+        .api-key-modal-body {
+          padding: 20px 24px;
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+        }
+
+        .engine-status-card {
+          padding: 12px 16px;
+          border-radius: 12px;
+          background: rgba(16, 185, 129, 0.08);
+          border: 1px solid rgba(16, 185, 129, 0.25);
+        }
+
+        .status-top-row {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          font-size: 0.88rem;
+          color: #34d399;
+        }
+
+        .status-info-text {
+          font-size: 0.78rem;
+          color: var(--text-muted);
+          margin: 6px 0 0;
+          line-height: 1.45;
+        }
+
+        .status-info-text code {
+          background: rgba(0, 0, 0, 0.3);
+          padding: 2px 5px;
+          border-radius: 4px;
+          color: #a7f3d0;
+          font-size: 0.74rem;
+        }
+
+        .key-input-container {
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+        }
+
+        .key-input-label {
+          font-size: 0.82rem;
+          font-weight: 600;
+          color: #e2e8f0;
+        }
+
+        .key-input-label span {
+          font-size: 0.72rem;
+          font-weight: normal;
+          color: var(--text-muted);
+        }
+
+        .key-text-input {
+          width: 100%;
+          padding: 10px 14px;
+          border-radius: 10px;
+          background: rgba(0, 0, 0, 0.35);
+          border: 1px solid rgba(255, 255, 255, 0.12);
+          color: #ffffff;
+          font-size: 0.88rem;
+          transition: border-color 0.2s;
+        }
+
+        .key-text-input:focus {
+          outline: none;
+          border-color: #10b981;
+          box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+        }
+
+        .key-help-text {
+          font-size: 0.73rem;
+          color: var(--text-muted);
+          margin: 2px 0 0;
+          line-height: 1.4;
+        }
+
+        .get-gemini-link {
+          display: inline-flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 10px 14px;
+          border-radius: 10px;
+          background: rgba(255, 255, 255, 0.03);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          color: #38bdf8;
+          font-size: 0.8rem;
+          text-decoration: none;
+          transition: all 0.2s;
+        }
+
+        .get-gemini-link:hover {
+          background: rgba(56, 189, 248, 0.1);
+          border-color: rgba(56, 189, 248, 0.3);
+          color: #7dd3fc;
+        }
+
+        .api-key-modal-footer {
+          display: flex;
+          align-items: center;
+          justify-content: flex-end;
+          gap: 10px;
+          padding: 16px 24px;
+          border-top: 1px solid rgba(255, 255, 255, 0.08);
+          background: rgba(0, 0, 0, 0.2);
         }
 
         .btn-clear-chat {

@@ -6,6 +6,16 @@ import {
   initialProgress,
   sampleChatKnowledge
 } from '../data/mockData';
+import { generateSmartFitnessResponse } from '../data/aiEngine';
+import {
+  authenticateUser,
+  registerUser,
+  resetUserPassword,
+  updateUserProfileInDB,
+  getActiveSession,
+  saveActiveSession,
+  clearActiveSession
+} from '../data/authStore';
 
 const defaultGuestProfile = {
   name: "",
@@ -33,10 +43,11 @@ const AppContext = createContext(null);
 export const AppProvider = ({ children }) => {
   // Navigation State - defaults to 'landing' page
   const [currentPage, setCurrentPage] = useState('landing');
-  
-  // User Profile & Auth - unauthenticated by default
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [user, setUser] = useState(defaultGuestProfile);
+
+  // User Profile & Auth
+  const initialSession = getActiveSession();
+  const [isLoggedIn, setIsLoggedIn] = useState(!!initialSession);
+  const [user, setUser] = useState(initialSession?.profile || defaultGuestProfile);
 
   // Auth Dialog Modal State (for "Get Started" and "Sign In")
   const [authModalOpen, setAuthModalOpen] = useState(false);
@@ -65,6 +76,29 @@ export const AppProvider = ({ children }) => {
   const [waterConsumed, setWaterConsumed] = useState(2.75);
   const waterTarget = 3.5;
 
+  // Google Gemini API Key management
+  const [geminiApiKey, setGeminiApiKey] = useState(() => {
+    return (
+      localStorage.getItem('fitwise_gemini_api_key') ||
+      import.meta.env.VITE_GEMINI_API_KEY ||
+      ""
+    );
+  });
+
+  const saveGeminiApiKey = (key) => {
+    const trimmed = (key || '').trim();
+    if (trimmed) {
+      localStorage.setItem('fitwise_gemini_api_key', trimmed);
+      setGeminiApiKey(trimmed);
+      showToast("Gemini API key updated successfully!", "success");
+    } else {
+      localStorage.removeItem('fitwise_gemini_api_key');
+      const fallback = import.meta.env.VITE_GEMINI_API_KEY || "";
+      setGeminiApiKey(fallback);
+      showToast("Reset to default Gemini API key.", "info");
+    }
+  };
+
   // AI Chat Messages & Multi-Session History State (ChatGPT / Gemini style)
   const defaultWelcomeMessage = {
     id: "m-welcome",
@@ -89,7 +123,7 @@ export const AppProvider = ({ children }) => {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) return parsed;
       }
-    } catch (e) {}
+    } catch (e) { }
     return initialSessions;
   });
 
@@ -97,20 +131,20 @@ export const AppProvider = ({ children }) => {
     try {
       const savedId = localStorage.getItem('fitwise_active_session_id_v2');
       if (savedId) return savedId;
-    } catch (e) {}
+    } catch (e) { }
     return "session-1";
   });
 
   useEffect(() => {
     try {
       localStorage.setItem('fitwise_chat_sessions_v2', JSON.stringify(chatSessions));
-    } catch (e) {}
+    } catch (e) { }
   }, [chatSessions]);
 
   useEffect(() => {
     try {
       localStorage.setItem('fitwise_active_session_id_v2', currentSessionId);
-    } catch (e) {}
+    } catch (e) { }
   }, [currentSessionId]);
 
   const activeSession = chatSessions.find((s) => s.id === currentSessionId) || chatSessions[0] || initialSessions[0];
@@ -133,54 +167,74 @@ export const AppProvider = ({ children }) => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Auth Handlers (Frontend mock)
-  const login = (email, password, displayName) => {
+  // Auth Handlers (with strict password & account validation)
+  const login = (email, password, displayName, rememberMe = true) => {
+    // If instant demo button used
+    if (
+      (email === "alex.morgan@fitwise.ai" || displayName === "Alex Morgan") &&
+      (!password || password === "demo1234")
+    ) {
+      const authRes = authenticateUser("alex.morgan@fitwise.ai", "demo1234");
+      if (authRes.success) {
+        saveActiveSession(authRes.user, true);
+        setIsLoggedIn(true);
+        setUser(authRes.user.profile);
+        showToast("Signed in as Alex Morgan (Demo Account)!", "success");
+        closeAuthModal();
+        navigateTo('dashboard');
+        return { success: true, user: authRes.user };
+      }
+    }
+
+    const authRes = authenticateUser(email, password);
+    if (!authRes.success) {
+      showToast(authRes.error, "error");
+      return authRes;
+    }
+
+    saveActiveSession(authRes.user, rememberMe);
     setIsLoggedIn(true);
-    let resolvedName = displayName;
-    if (!resolvedName && email) {
-      const prefix = email.split('@')[0];
-      resolvedName = prefix
-        .replace(/[._-]/g, ' ')
-        .split(' ')
-        .filter(Boolean)
-        .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-        .join(' ');
-    }
-    if (!resolvedName) resolvedName = "Athlete";
-
-    if (email === "alex.morgan@fitwise.ai" || resolvedName === "Alex Morgan") {
-      setUser({
-        ...initialProfile,
-        name: "Alex Morgan",
-        email: "alex.morgan@fitwise.ai"
-      });
-    } else {
-      setUser((prev) => ({
-        ...prev,
-        email: email || "athlete@fitwise.ai",
-        name: resolvedName
-      }));
-    }
-
-    showToast(`Welcome back, ${resolvedName}! Signed in successfully.`, "success");
+    setUser(authRes.user.profile);
+    showToast(`Welcome back, ${authRes.user.name}! Signed in successfully.`, "success");
     closeAuthModal();
     navigateTo('dashboard');
+    return { success: true, user: authRes.user };
   };
 
   const register = (data) => {
+    const regRes = registerUser({
+      name: data.name,
+      email: data.email,
+      password: data.password,
+      defaultGuestProfile
+    });
+
+    if (!regRes.success) {
+      showToast(regRes.error, "error");
+      return regRes;
+    }
+
+    saveActiveSession(regRes.user, true);
     setIsLoggedIn(true);
-    const resolvedName = data.name || (data.email ? data.email.split('@')[0] : "Athlete");
-    setUser((prev) => ({
-      ...prev,
-      name: resolvedName,
-      email: data.email || "athlete@fitwise.ai"
-    }));
-    showToast(`Account created for ${resolvedName}! Let's personalize your fitness profile.`, "success");
+    setUser(regRes.user.profile);
+    showToast(`Account created for ${regRes.user.name}! Let's personalize your fitness profile.`, "success");
     closeAuthModal();
     navigateTo('profile-setup');
+    return { success: true, user: regRes.user };
+  };
+
+  const resetPassword = (email, newPassword) => {
+    const res = resetUserPassword(email, newPassword);
+    if (res.success) {
+      showToast(res.message, "success");
+    } else {
+      showToast(res.error, "error");
+    }
+    return res;
   };
 
   const logout = () => {
+    clearActiveSession();
     setIsLoggedIn(false);
     setUser(defaultGuestProfile);
     showToast("Logged out successfully.", "info");
@@ -189,7 +243,14 @@ export const AppProvider = ({ children }) => {
 
   // Profile Update Handler
   const updateProfile = (updatedFields) => {
-    setUser((prev) => ({ ...prev, ...updatedFields }));
+    setUser((prev) => {
+      const updated = { ...prev, ...updatedFields };
+      if (updated.email) {
+        updateUserProfileInDB(updated.email, updated);
+        saveActiveSession({ email: updated.email, name: updated.name, profile: updated });
+      }
+      return updated;
+    });
     showToast("Profile settings updated successfully!", "success");
   };
 
@@ -400,25 +461,125 @@ export const AppProvider = ({ children }) => {
     );
     setIsAiTyping(true);
 
+    // Prepare multi-turn history (last 8 messages)
+    const cleanHistory = chatMessages
+      .filter((m) => m.id !== 'm-welcome' && !m.id.startsWith('m-reset') && (m.text || m.image))
+      .slice(-8)
+      .map((m) => ({
+        role: m.sender === 'user' ? 'user' : 'model',
+        text: m.text || (m.image ? "[User attached an image]" : "")
+      }));
+
+    const athleteName = user.name || "Athlete";
+    const athleteGoal = user.fitnessGoal || "Overall Health & Strength";
+
+    const systemInstruction = `You are FitWise AI, an expert, personalized, and articulate AI health, fitness, nutrition, and wellness coach—delivering answers with the quality, intelligence, and depth of ChatGPT and Google Gemini.
+
+Athlete Context:
+- Name: ${athleteName}
+- Primary Goal: ${athleteGoal}
+- Dietary Preference: ${user.foodPreference || 'Balanced'}
+- Activity Level: ${user.activityLevel || 'Active'}
+
+Guidelines:
+1. Directly and specifically answer EXACTLY what the user asks. Never give generic boilerplate.
+2. If asked about workouts, exercises, or anatomy: provide clear biomechanical cues, set/rep ranges, target muscle heads, and progression tips.
+3. If asked about diet, nutrition, or macros: provide concrete numbers (calories, grams of protein/carbs/fat), food suggestions, and meal timing.
+4. If asked about recovery, soreness, sleep, or mindset: give science-backed practical advice with genuine human warmth.
+5. If analyzing an image: break down the foods, estimate calories/macros, or identify the gym equipment with proper form cues.
+6. Use clean, beautiful Markdown formatting with clear headings, bullet points, and bold emphasis for effortless reading.`;
+
+    const activeKey = (
+      localStorage.getItem('fitwise_gemini_api_key') ||
+      geminiApiKey ||
+      import.meta.env.VITE_GEMINI_API_KEY ||
+      ""
+    ).trim();
+
+    // 1. Try Direct Google Gemini REST API from browser (CORS enabled, fastest)
+    if (activeKey) {
+      const modelsToTry = [
+        "gemini-3.5-flash-lite",
+        "gemini-3.8-flash",
+        "gemini-flash-latest",
+        "gemini-3.5-flash"
+      ];
+
+      const contents = [];
+      cleanHistory.forEach((h) => {
+        contents.push({
+          role: h.role === 'user' ? 'user' : 'model',
+          parts: [{ text: h.text }]
+        });
+      });
+
+      const userParts = [{ text: textContent || (imageAttachment ? "Please analyze this fitness or nutrition image in detail." : "") }];
+      if (imageAttachment && imageAttachment.base64 && imageAttachment.mimeType) {
+        userParts.push({
+          inline_data: {
+            mime_type: imageAttachment.mimeType,
+            data: imageAttachment.base64
+          }
+        });
+      }
+      contents.push({ role: 'user', parts: userParts });
+
+      for (const model of modelsToTry) {
+        try {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 12000);
+          const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${activeKey}`;
+
+          const response = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              system_instruction: { parts: [{ text: systemInstruction }] },
+              contents
+            }),
+            signal: controller.signal
+          });
+          clearTimeout(timeoutId);
+
+          if (response.ok) {
+            const data = await response.json();
+            const replyText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+            if (replyText) {
+              const aiMsg = {
+                id: `ai-${Date.now()}`,
+                sender: "assistant",
+                text: replyText,
+                timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+              };
+              setChatSessions((prev) =>
+                prev.map((s) => (s.id === currentSessionId ? { ...s, messages: [...s.messages, aiMsg] } : s))
+              );
+              setIsAiTyping(false);
+              return;
+            }
+          }
+        } catch (e) {
+          // If model fails or times out, loop tries next model
+        }
+      }
+    }
+
+    // 2. Try Vercel Serverless / Backend /api/chat
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 25000);
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+      const isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+      const chatEndpoint = isLocal && window.location.port !== "3001" ? "http://localhost:3001/api/chat" : "/api/chat";
 
-      // Prepare multi-turn history (last 8 messages)
-      const cleanHistory = chatMessages
-        .filter((m) => m.id !== 'm-welcome' && !m.id.startsWith('m-reset') && (m.text || m.image))
-        .slice(-8)
-        .map((m) => ({
-          role: m.sender === 'user' ? 'user' : 'model',
-          text: m.text || (m.image ? "[User attached an image]" : "")
-        }));
+      const headers = { "Content-Type": "application/json" };
+      if (activeKey) headers["x-gemini-key"] = activeKey;
 
       const payload = {
         message: textContent,
         history: cleanHistory,
         userContext: {
-          name: user.name,
-          fitnessGoal: user.fitnessGoal,
+          name: athleteName,
+          fitnessGoal: athleteGoal,
           foodPreference: user.foodPreference,
           sleepDuration: user.sleepDuration,
           activityLevel: user.activityLevel
@@ -432,10 +593,9 @@ export const AppProvider = ({ children }) => {
         };
       }
 
-      const chatEndpoint = window.location.port === "3001" ? "/api/chat" : "http://localhost:3001/api/chat";
       const response = await fetch(chatEndpoint, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify(payload),
         signal: controller.signal
       });
@@ -458,43 +618,25 @@ export const AppProvider = ({ children }) => {
         }
       }
     } catch (e) {
-      // Backend not running or offline; fallback to local smart engine seamlessly
+      // Backend not running or blocked; seamlessly proceed to smart engine
     }
 
-    // Local smart fitness response fallback
+    // 3. Fallback: Dynamic Smart Fitness Intelligence Engine
+    // Never repeats a boilerplate response; specifically answers the user's prompt
     setTimeout(() => {
-      let matchedReply = null;
-
-      if (imageAttachment) {
-        matchedReply = `### 📷 Image Received (${imageAttachment.name})\n\nI've received your image! For full computer vision (macro calculation, portion sizing, gym equipment identification), please ensure the local server is running with Google Gemini. Based on your prompt: **"${textContent || 'Image Analysis'}"**, feel free to ask any specific question!`;
-      } else {
-        const lower = textContent.toLowerCase();
-        for (const entry of sampleChatKnowledge) {
-          if (entry.keywords.some((kw) => lower.includes(kw))) {
-            matchedReply = entry.reply;
-            break;
-          }
-        }
-
-        if (!matchedReply) {
-          if (lower.includes("hello") || lower.includes("hi") || lower.includes("hey")) {
-            matchedReply = `Hello ${user.name}! How can I help you with your fitness, nutrition, or workouts today?`;
-          } else if (lower.includes("tired") || lower.includes("fatigue") || lower.includes("exhaust") || lower.includes("sleepy") || lower.includes("low energy")) {
-            matchedReply = `I hear you! When feeling tired, take it easy today. Consider an active recovery walk, gentle stretching, staying hydrated, and getting quality sleep tonight. Rest is crucial for progress!`;
-          } else if (lower.includes("sore") || lower.includes("pain") || lower.includes("stiff") || lower.includes("ache")) {
-            matchedReply = `Muscle soreness is normal after training. Foam rolling, staying hydrated, and light movement can help with blood flow and repair. If you experience joint or sharp pain, make sure to rest that area!`;
-          } else if (lower.includes("water") || lower.includes("hydrat")) {
-            matchedReply = `You've consumed **${waterConsumed}L** of your **${waterTarget}L** target today! Hydration is vital for muscle function and energy. Have a glass of water now to stay on pace!`;
-          } else {
-            matchedReply = `Regarding **"${textContent}"**: Consistency, proper form, adequate protein, and quality rest are the pillars of reaching your goals. Let me know if you would like specific exercises, recipes, or training advice!`;
-          }
-        }
-      }
+      const userContext = {
+        name: athleteName,
+        fitnessGoal: athleteGoal,
+        foodPreference: user.foodPreference,
+        sleepDuration: user.sleepDuration,
+        activityLevel: user.activityLevel
+      };
+      const smartReply = generateSmartFitnessResponse(textContent, userContext, imageAttachment);
 
       const aiMsg = {
         id: `ai-${Date.now()}`,
         sender: "assistant",
-        text: matchedReply,
+        text: smartReply,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
 
@@ -502,7 +644,7 @@ export const AppProvider = ({ children }) => {
         prev.map((s) => (s.id === currentSessionId ? { ...s, messages: [...s.messages, aiMsg] } : s))
       );
       setIsAiTyping(false);
-    }, 600);
+    }, 450);
   };
 
   const clearChat = () => {
@@ -535,6 +677,7 @@ export const AppProvider = ({ children }) => {
         isLoggedIn,
         login,
         register,
+        resetPassword,
         logout,
         user,
         updateProfile,
@@ -565,6 +708,8 @@ export const AppProvider = ({ children }) => {
         clearChat,
         toast,
         showToast,
+        geminiApiKey,
+        saveGeminiApiKey,
         authModalOpen,
         openAuthModal,
         closeAuthModal,
