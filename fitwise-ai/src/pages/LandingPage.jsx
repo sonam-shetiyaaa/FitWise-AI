@@ -331,11 +331,35 @@ export const LandingPage = () => {
         }
 
         @media (max-width: 600px) {
+          .landing-top-bar {
+            padding: 14px 16px;
+          }
+          .landing-hero-container {
+            padding: 24px 16px 80px;
+          }
+          .hero-kicker {
+            font-size: 0.72rem;
+            margin-bottom: 16px;
+          }
           .hero-headline {
-            font-size: 2.6rem;
+            font-size: 2.2rem;
+            line-height: 1.15;
+            margin-bottom: 18px;
           }
           .hero-subtext {
-            font-size: 1.05rem;
+            font-size: 1rem;
+            margin-bottom: 28px;
+          }
+          .hero-cta-wrap {
+            width: 100%;
+            margin-bottom: 44px;
+          }
+          .btn-get-started {
+            width: 100%;
+            justify-content: center;
+          }
+          .feature-card {
+            padding: 22px 18px;
           }
         }
       `}</style>

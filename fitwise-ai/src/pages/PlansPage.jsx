@@ -361,7 +361,20 @@ export const PlansPage = () => {
 
         @media (max-width: 768px) {
           .nutrifit-plans-page {
-            padding: 24px 20px 60px;
+            padding: 16px 14px 110px;
+            gap: 16px;
+          }
+          .plans-title {
+            font-size: 1.85rem;
+          }
+          .plans-filter-row {
+            overflow-x: auto;
+            padding-bottom: 4px;
+            -webkit-overflow-scrolling: touch;
+          }
+          .plan-item-card {
+            padding: 18px 16px;
+            border-radius: 20px;
           }
           .plan-td-focus, .plan-td-day {
             display: block;

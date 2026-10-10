@@ -447,13 +447,25 @@ export const ProfileSetupPage = () => {
 
         @media (max-width: 768px) {
           .nutrifit-settings-page {
-            padding: 24px 20px 60px;
+            padding: 16px 14px 110px;
+            gap: 16px;
+          }
+          .settings-title {
+            font-size: 1.85rem;
+          }
+          .settings-card {
+            padding: 18px 16px;
+            border-radius: 20px;
           }
           .activity-cards-grid,
           .goals-cards-grid,
-          .metrics-inputs-grid,
           .gender-toggle-row {
             grid-template-columns: 1fr;
+            gap: 10px;
+          }
+          .btn-save-changes {
+            width: 100%;
+            justify-content: center;
           }
         }
       `}</style>

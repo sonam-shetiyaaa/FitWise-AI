@@ -433,6 +433,15 @@ export const SpotlightSearch = ({ isOpen, onClose }) => {
           color: #64748b;
           font-weight: 600;
         }
+
+        @media (max-width: 600px) {
+          .spotlight-modal {
+            width: 95%;
+          }
+          .spotlight-hotkeys {
+            display: none;
+          }
+        }
       `}</style>
     </div>
   );

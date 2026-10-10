@@ -326,37 +326,53 @@ export const Sidebar = () => {
           }
         }
 
-        @media (max-width: 820px) {
+        @media (max-width: 768px) {
           .nutrifit-top-navbar {
-            padding: 10px 0 8px;
+            padding: 0;
+            height: 56px;
           }
 
           .top-navbar-container {
-            height: auto;
-            flex-wrap: wrap;
-            gap: 12px;
-            padding: 0 16px;
+            height: 56px;
+            flex-wrap: nowrap;
+            gap: 8px;
+            padding: 0 12px;
+            justify-content: space-between;
+          }
+
+          /* On mobile, tabs are cleanly moved to iOS Bottom Tab Bar */
+          .top-nav-items {
+            display: none !important;
           }
 
           .top-brand-area {
-            order: 1;
+            gap: 8px;
+          }
+
+          .nutrifit-logo-badge {
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+          }
+
+          .pulse-svg {
+            width: 16px;
+            height: 16px;
+          }
+
+          .nutrifit-brand-name {
+            font-size: 1.15rem;
           }
 
           .top-island-wrapper {
-            order: 2;
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            max-width: 190px;
           }
 
           .top-nav-right {
-            order: 3;
-          }
-
-          .top-nav-items {
-            order: 4;
-            width: 100%;
-            justify-content: flex-start;
-            padding: 4px;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
+            gap: 6px;
           }
 
           .top-logout-btn .logout-text {
@@ -364,7 +380,21 @@ export const Sidebar = () => {
           }
 
           .top-logout-btn {
-            padding: 7px 10px;
+            padding: 6px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            justify-content: center;
+          }
+        }
+
+        @media (max-width: 440px) {
+          .nutrifit-brand-name {
+            font-size: 1.05rem;
+          }
+
+          .top-navbar-container {
+            padding: 0 10px;
           }
         }
       `}</style>

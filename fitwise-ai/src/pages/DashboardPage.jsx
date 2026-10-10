@@ -565,18 +565,97 @@ export const DashboardPage = () => {
 
         @media (max-width: 768px) {
           .nutrifit-dashboard {
-            padding: 24px 20px 48px;
+            padding: 16px 14px 110px;
+            gap: 16px;
           }
+
+          .dashboard-greeting {
+            font-size: 2rem;
+          }
+
+          .nutrifit-card {
+            padding: 20px 16px;
+            border-radius: 20px;
+          }
+
+          /* 2x2 Clean iOS Widget Grid on mobile */
           .dashboard-stats-row {
-            grid-template-columns: 1fr;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
           }
+
+          .stat-tile {
+            padding: 14px 14px;
+            gap: 4px;
+          }
+
+          .stat-tile-val strong {
+            font-size: 1.5rem;
+          }
+
+          .stat-tile-val span {
+            font-size: 0.82rem;
+          }
+
           .coach-action-banner {
             flex-direction: column;
             align-items: flex-start;
+            padding: 18px 16px;
+            gap: 14px;
           }
+
           .btn-open-coach {
             width: 100%;
             justify-content: center;
+          }
+        }
+
+        @media (max-width: 540px) {
+          .macro-gauges-row {
+            gap: 8px;
+            margin-bottom: 20px;
+          }
+
+          .mini-ring-wrap {
+            width: 88px;
+            height: 88px;
+          }
+
+          .mini-ring-wrap svg {
+            width: 88px;
+            height: 88px;
+          }
+
+          .mini-ring-wrap circle {
+            r: 34;
+            cx: 44;
+            cy: 44;
+          }
+
+          .mini-ring-val {
+            font-size: 1.25rem;
+          }
+
+          .mini-ring-label {
+            font-size: 0.72rem;
+          }
+
+          .macro-sub-stat {
+            font-size: 0.75rem;
+          }
+
+          .calorie-ring-wrap {
+            width: 190px;
+            height: 190px;
+          }
+
+          .calorie-ring-wrap svg {
+            width: 190px;
+            height: 190px;
+          }
+
+          .calorie-number {
+            font-size: 2.3rem;
           }
         }
       `}</style>

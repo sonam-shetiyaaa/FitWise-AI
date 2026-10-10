@@ -20,6 +20,7 @@ import { IosHomeIndicator } from './components/IosHomeIndicator';
 import { IosNotificationBanner } from './components/IosNotificationBanner';
 import { ControlCenter } from './components/ControlCenter';
 import { SpotlightSearch } from './components/SpotlightSearch';
+import { IosBottomTabBar } from './components/IosBottomTabBar';
 
 const MainAppContent = () => {
   const { currentPage, navigateTo, toast, isLoggedIn, logout, user } = useApp();
@@ -114,8 +115,9 @@ const MainAppContent = () => {
         {renderActivePage()}
       </main>
 
-      {/* Auth Modal, iOS Home Indicator & iOS Push Notifications */}
+      {/* Auth Modal, iOS Bottom Tab Bar & iOS Home Indicator */}
       <AuthModal />
+      <IosBottomTabBar />
       <IosHomeIndicator onHomeClick={() => navigateTo('dashboard')} />
 
       {/* iOS Push Notification Banner */}
@@ -159,8 +161,14 @@ const MainAppContent = () => {
           min-width: 0;
           overflow-y: auto;
           background: #000000;
-          padding-bottom: 96px;
+          padding-bottom: 60px;
           -webkit-overflow-scrolling: touch;
+        }
+
+        @media (max-width: 768px) {
+          .nutrifit-main-content {
+            padding-bottom: 120px;
+          }
         }
       `}</style>
     </div>

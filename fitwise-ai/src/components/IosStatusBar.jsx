@@ -360,16 +360,31 @@ export const IosStatusBar = ({ onOpenControlCenter, onOpenSpotlight, isDeviceFra
 
         @media (max-width: 640px) {
           .ios-system-status-bar {
-            padding: 0 14px;
-            height: 34px;
+            padding: 0 12px;
+            height: 32px;
+          }
+
+          .ios-status-time {
+            font-size: 0.8rem;
           }
 
           .ios-speaker-slit {
-            width: 36px;
+            width: 32px;
+            height: 3.5px;
+          }
+
+          .ios-status-right {
+            gap: 6px;
           }
 
           .ios-battery-pct {
             display: none;
+          }
+
+          .ios-status-action-btn,
+          .ios-control-trigger-btn {
+            width: 20px;
+            height: 20px;
           }
         }
       `}</style>

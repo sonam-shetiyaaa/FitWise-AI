@@ -380,7 +380,8 @@ export const DynamicIsland = () => {
           top: 0;
           left: 50%;
           transform: translateX(-50%);
-          width: 380px;
+          width: min(380px, calc(100vw - 20px));
+          max-width: 95vw;
           border-radius: 26px;
           padding: 18px 20px 16px;
           background: rgba(0, 0, 0, 0.96);
@@ -389,6 +390,7 @@ export const DynamicIsland = () => {
           border: 1px solid rgba(255, 255, 255, 0.18);
           box-shadow: 0 20px 50px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(255, 255, 255, 0.08);
           animation: iosSpringExpand 0.35s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+          z-index: 1000;
         }
 
         @keyframes iosSpringExpand {
