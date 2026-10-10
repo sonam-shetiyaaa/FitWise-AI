@@ -18,7 +18,13 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { message, image, history = [], userContext = {} } = req.body || {};
+    let body = req.body;
+    if (typeof body === 'string') {
+      try {
+        body = JSON.parse(body);
+      } catch (e) {}
+    }
+    const { message, image, history = [], userContext = {} } = body || {};
 
     if (!message && !image) {
       return res.status(400).json({ error: 'Message or image is required' });
@@ -27,7 +33,9 @@ export default async function handler(req, res) {
     const apiKey = (
       req.headers['x-gemini-key'] ||
       process.env.GEMINI_API_KEY ||
+      process.env.gemini_api_key ||
       process.env.VITE_GEMINI_API_KEY ||
+      process.env.vite_gemini_api_key ||
       ""
     ).trim();
 

@@ -710,7 +710,7 @@ Core Directives & Behavioral Tuning:
     // 2. Try Vercel Serverless / Backend /api/chat
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000);
+      const timeoutId = setTimeout(() => controller.abort(), 25000);
       const isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
       const chatEndpoint = isLocal && window.location.port !== "3001" ? "http://localhost:3001/api/chat" : "/api/chat";
 
