@@ -329,3 +329,36 @@ a:hover {
     transform: scale(1) translateY(0);
   }
 }
+
+/* ==========================================================================
+   iOS Tactile Spring Physics & Native WebKit Enhancements
+   ========================================================================== */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body, .nutrifit-main-content, .chat-stream-viewport, .top-nav-items {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+/* iOS Tactile Compression & Spring Release */
+button:active,
+.top-nav-item:active,
+.btn-open-coach:active,
+.btn-save-changes:active,
+.plans-filter-btn:active,
+.preset-btn:active,
+.btn-landing-cta:active,
+.btn-landing-signin:active,
+.stat-tile:active,
+.nutrifit-card:active {
+  transform: scale(0.975);
+  transition: transform 0.1s cubic-bezier(0.32, 0.72, 0, 1) !important;
+}
+
+/* Safe Area Inset Support for notch/pill iPhones */
+body {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+

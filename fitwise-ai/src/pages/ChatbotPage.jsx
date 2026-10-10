@@ -428,9 +428,10 @@ export const ChatbotPage = () => {
         .nutrifit-coach-chat {
           display: flex;
           flex-direction: column;
-          height: 100vh;
+          height: calc(100vh - 68px);
           max-width: 1100px;
-          margin: 0;
+          margin: 0 auto;
+          width: 100%;
           padding: 24px 36px 28px;
           background: #090e0c;
         }

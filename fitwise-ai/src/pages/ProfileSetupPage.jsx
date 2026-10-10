@@ -211,7 +211,8 @@ export const ProfileSetupPage = () => {
         .nutrifit-settings-page {
           padding: 40px 48px 80px;
           max-width: 900px;
-          margin: 0;
+          margin: 0 auto;
+          width: 100%;
           display: flex;
           flex-direction: column;
           gap: 28px;

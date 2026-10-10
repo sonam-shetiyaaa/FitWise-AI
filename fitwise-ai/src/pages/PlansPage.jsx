@@ -123,7 +123,8 @@ export const PlansPage = () => {
         .nutrifit-plans-page {
           padding: 40px 48px 80px;
           max-width: 1200px;
-          margin: 0;
+          margin: 0 auto;
+          width: 100%;
           display: flex;
           flex-direction: column;
           gap: 24px;
