@@ -18,40 +18,60 @@ import {
 } from '../data/authStore';
 
 const defaultGuestProfile = {
-  name: "",
-  email: "",
-  age: 26,
-  gender: "Not specified",
-  height: 175,
-  weight: 70,
-  targetWeight: 68,
-  fitnessGoal: "General Fitness & Health",
-  activityLevel: "Moderately Active (3-5 sessions/week)",
-  fitnessExperience: "Beginner (< 6 months)",
+  name: "Alex",
+  email: "athlete@nutrifit.app",
+  age: 20,
+  gender: "Male",
+  height: 173,
+  weight: 65,
+  targetWeight: 70,
+  fitnessGoal: "Muscle Hypertrophy",
+  goal: "Muscle Hypertrophy",
+  activityLevel: "Moderately Active",
+  dietaryPreferences: ["Vegetarian", "Non-Veg"],
+  dietaryRestrictions: "None",
+  fitnessExperience: "Intermediate",
   workoutLocation: "Commercial Gym",
   workoutDuration: "45-60 min",
   foodPreference: "High-Protein Balanced",
-  dietaryRestrictions: "None",
   preferredCuisine: "Balanced",
-  waterIntake: "3.0 Liters",
+  waterIntake: "3.5 Liters",
   sleepDuration: "7-8 hours",
   avatarUrl: ""
+};
+
+const getInitialPage = () => {
+  if (typeof window !== 'undefined') {
+    const path = window.location.pathname.toLowerCase();
+    if (path.includes('settings')) return 'settings';
+    if (path.includes('plans')) return 'plans';
+    if (path.includes('coach')) return 'coach';
+    if (path.includes('dashboard')) return 'dashboard';
+    if (path === '/' || path === '') return 'dashboard';
+  }
+  return 'dashboard';
 };
 
 const AppContext = createContext(null);
 
 export const AppProvider = ({ children }) => {
-  // Navigation State - defaults to 'landing' page
-  const [currentPage, setCurrentPage] = useState('landing');
+  // Navigation State - synced with browser URL
+  const [currentPage, setCurrentPage] = useState(getInitialPage);
 
-  // User Profile & Auth
+  // User Profile & Auth - defaults to logged-in Alex (matching screenshots)
   const initialSession = getActiveSession();
-  const [isLoggedIn, setIsLoggedIn] = useState(!!initialSession);
+  const [isLoggedIn, setIsLoggedIn] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('nutrifit_logged_in_v1');
+      if (saved !== null) return saved === 'true';
+    }
+    return true; // Default to true
+  });
   const [user, setUser] = useState(initialSession?.profile || defaultGuestProfile);
 
-  // Auth Dialog Modal State (for "Get Started" and "Sign In")
+  // Auth Dialog Modal State
   const [authModalOpen, setAuthModalOpen] = useState(false);
-  const [authModalTab, setAuthModalTab] = useState('signin'); // 'signin' or 'register'
+  const [authModalTab, setAuthModalTab] = useState('signin');
 
   const openAuthModal = (tab = 'signin') => {
     setAuthModalTab(tab);
@@ -99,26 +119,74 @@ export const AppProvider = ({ children }) => {
     }
   };
 
-  // AI Chat Messages & Multi-Session History State (ChatGPT / Gemini style)
-  const defaultWelcomeMessage = {
-    id: "m-welcome",
+  // Saved Plans state (for Meal & Workout Plans)
+  const [savedPlans, setSavedPlans] = useState(() => {
+    try {
+      const saved = localStorage.getItem('nutrifit_saved_plans_v1');
+      if (saved) return JSON.parse(saved);
+    } catch (e) { }
+    return [];
+  });
+
+  const addSavedPlan = (plan) => {
+    setSavedPlans((prev) => {
+      const exists = prev.some((p) => p.id === plan.id || p.title === plan.title);
+      if (exists) return prev;
+      const updated = [plan, ...prev];
+      try {
+        localStorage.setItem('nutrifit_saved_plans_v1', JSON.stringify(updated));
+      } catch (e) { }
+      return updated;
+    });
+    showToast("Saved to My Plans!", "success");
+  };
+
+  const deleteSavedPlan = (planId) => {
+    setSavedPlans((prev) => {
+      const updated = prev.filter((p) => p.id !== planId);
+      try {
+        localStorage.setItem('nutrifit_saved_plans_v1', JSON.stringify(updated));
+      } catch (e) { }
+      return updated;
+    });
+    showToast("Plan removed from My Plans.", "info");
+  };
+
+  // Default demo workout split plan matching Screenshot 4
+  const demoSplitPlanData = {
+    id: "plan-split-5day",
+    title: "5-Day Muscle Hypertrophy Split",
+    type: "Workout",
+    schedule: [
+      { day: "Day 1", focus: "Upper Body A", details: "Barbell/DB Bench Press, Chest-Supported Rows, Overhead Press, Lat Pulldowns, Bicep/Tricep supersets." },
+      { day: "Day 2", focus: "Lower Body A", details: "Barbell Back Squats or Leg Press, Romanian Deadlifts (RDLs), Walking Lunges, Calf Raises, Core work." },
+      { day: "Day 3", focus: "Rest & Recovery", details: "Light walking, mobility work, and hitting your 130g protein target." },
+      { day: "Day 4", focus: "Upper Body B", details: "Incline DB Press, Seated Cable Rows, Lateral Raises, Cable Flyes, Hammer Curls, Dips." },
+      { day: "Day 5", focus: "Lower Body B", details: "Bulgarian Split Squats, Leg Extensions, Seated Leg Curls, Glute Bridges, Calf Raises." },
+    ],
+    footerPrompt: "What would you like to tackle next? We can map out a high-calorie muscle-building meal plan or dive deeper into your progressive overload strategy!"
+  };
+
+  const defaultDemoMessage = {
+    id: "m-demo-split",
     sender: "assistant",
-    text: "👋 Hi! I'm your **FitWise AI Coach**. I'm here to help with personalized workouts, macro calculations, exercise form, and recovery.\n\nYou can ask me any question or **upload an image** of your meal or gym equipment for live AI analysis!",
-    timestamp: "Just now"
+    text: "Here is your customized progressive overload training plan:",
+    plan: demoSplitPlanData,
+    timestamp: "11:29 AM"
   };
 
   const initialSessions = [
     {
-      id: "session-1",
-      title: "Fitness & Nutrition Coach",
+      id: "demo-chat-1",
+      title: "5-Day Hypertrophy Split",
       createdAt: Date.now(),
-      messages: [defaultWelcomeMessage]
+      messages: [defaultDemoMessage]
     }
   ];
 
   const [chatSessions, setChatSessions] = useState(() => {
     try {
-      const saved = localStorage.getItem('fitwise_chat_sessions_v2');
+      const saved = localStorage.getItem('nutrifit_chat_sessions_v3');
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) return parsed;
@@ -129,21 +197,21 @@ export const AppProvider = ({ children }) => {
 
   const [currentSessionId, setCurrentSessionId] = useState(() => {
     try {
-      const savedId = localStorage.getItem('fitwise_active_session_id_v2');
+      const savedId = localStorage.getItem('nutrifit_active_session_id_v3');
       if (savedId) return savedId;
     } catch (e) { }
-    return "session-1";
+    return "demo-chat-1";
   });
 
   useEffect(() => {
     try {
-      localStorage.setItem('fitwise_chat_sessions_v2', JSON.stringify(chatSessions));
+      localStorage.setItem('nutrifit_chat_sessions_v3', JSON.stringify(chatSessions));
     } catch (e) { }
   }, [chatSessions]);
 
   useEffect(() => {
     try {
-      localStorage.setItem('fitwise_active_session_id_v2', currentSessionId);
+      localStorage.setItem('nutrifit_active_session_id_v3', currentSessionId);
     } catch (e) { }
   }, [currentSessionId]);
 
@@ -161,29 +229,89 @@ export const AppProvider = ({ children }) => {
     }, 3800);
   };
 
-  // Navigation Helper
+  const getPageTitleAndPath = (page) => {
+    let url = '/dashboard';
+    let title = 'Dashboard — NutriFit';
+    if (page === 'settings' || page === 'profile-setup') {
+      url = '/settings';
+      title = 'Profile & Settings — NutriFit';
+    } else if (page === 'plans') {
+      url = '/plans';
+      title = 'My Plans — NutriFit';
+    } else if (page === 'coach' || page === 'chatbot') {
+      url = '/coach/demo-chat-1';
+      title = 'AI Coach — NutriFit';
+    } else if (page === 'dashboard') {
+      url = '/dashboard';
+      title = 'Dashboard — NutriFit';
+    } else if (page === 'landing') {
+      url = '/';
+      title = 'NutriFit — Train smarter, eat with precision.';
+    }
+    return { url, title };
+  };
+
+  // Navigation Helper with URL & Title sync
   const navigateTo = (page) => {
     setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (typeof window !== 'undefined') {
+      const { url, title } = getPageTitleAndPath(page);
+      try {
+        window.history.pushState({ page }, '', url);
+      } catch (e) {}
+      document.title = title;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   };
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const { title } = getPageTitleAndPath(currentPage);
+      document.title = title;
+    }
+    const handlePopState = () => {
+      const path = window.location.pathname.toLowerCase();
+      if (path.includes('settings')) {
+        setCurrentPage('settings');
+        document.title = 'Profile & Settings — NutriFit';
+      } else if (path.includes('plans')) {
+        setCurrentPage('plans');
+        document.title = 'My Plans — NutriFit';
+      } else if (path.includes('coach')) {
+        setCurrentPage('coach');
+        document.title = 'AI Coach — NutriFit';
+      } else if (path.includes('dashboard')) {
+        setCurrentPage('dashboard');
+        document.title = 'Dashboard — NutriFit';
+      }
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
 
   // Auth Handlers (with strict password & account validation)
   const login = (email, password, displayName, rememberMe = true) => {
+    try {
+      localStorage.setItem('nutrifit_logged_in_v1', 'true');
+    } catch (e) {}
+
     // If instant demo button used
     if (
-      (email === "alex.morgan@fitwise.ai" || displayName === "Alex Morgan") &&
+      (email === "athlete@nutrifit.app" || email === "alex.morgan@fitwise.ai" || displayName === "Alex" || displayName === "Alex Morgan") &&
       (!password || password === "demo1234")
     ) {
-      const authRes = authenticateUser("alex.morgan@fitwise.ai", "demo1234");
-      if (authRes.success) {
-        saveActiveSession(authRes.user, true);
-        setIsLoggedIn(true);
-        setUser(authRes.user.profile);
-        showToast("Signed in as Alex Morgan (Demo Account)!", "success");
-        closeAuthModal();
-        navigateTo('dashboard');
-        return { success: true, user: authRes.user };
-      }
+      const demoUser = {
+        name: "Alex",
+        email: "athlete@nutrifit.app",
+        profile: defaultGuestProfile
+      };
+      saveActiveSession(demoUser, true);
+      setIsLoggedIn(true);
+      setUser(defaultGuestProfile);
+      showToast("Signed in as Alex (NutriFit Demo)!", "success");
+      closeAuthModal();
+      navigateTo('dashboard');
+      return { success: true, user: demoUser };
     }
 
     const authRes = authenticateUser(email, password);
@@ -235,6 +363,9 @@ export const AppProvider = ({ children }) => {
 
   const logout = () => {
     clearActiveSession();
+    try {
+      localStorage.setItem('nutrifit_logged_in_v1', 'false');
+    } catch (e) {}
     setIsLoggedIn(false);
     setUser(defaultGuestProfile);
     showToast("Logged out successfully.", "info");
@@ -473,21 +604,33 @@ export const AppProvider = ({ children }) => {
     const athleteName = user.name || "Athlete";
     const athleteGoal = user.fitnessGoal || "Overall Health & Strength";
 
-    const systemInstruction = `You are FitWise AI, an expert, personalized, and articulate AI health, fitness, nutrition, and wellness coach—delivering answers with the quality, intelligence, and depth of ChatGPT and Google Gemini.
+    const systemInstruction = `You are FitWise AI, an advanced, highly intelligent, and versatile AI coach and assistant—matching the breadth, depth, and conversational fluency of ChatGPT and Google Gemini.
 
-Athlete Context:
+You are equipped with universal knowledge across all topics and disciplines:
+- General Knowledge, Science, Physics, Chemistry, Biology, Astronomy, Math, and History.
+- Technology, Programming, Computer Science, Web Development, and Digital Tools.
+- Human Physiology, Anatomy, Neuroscience, Sleep Medicine, Circadian Biology, and Stress Management.
+- Workouts, Strength & Conditioning, Hypertrophy, Biomechanics, Calisthenics, Running, and Injury Rehabilitation.
+- Nutrition, Dietetics, Metabolism, Macronutrients, Micronutrients, and Hydration.
+- Psychology, Habit Formation, Time Management, Productivity, Focus, Motivation, and Everyday Life.
+
+User Context:
 - Name: ${athleteName}
 - Primary Goal: ${athleteGoal}
 - Dietary Preference: ${user.foodPreference || 'Balanced'}
 - Activity Level: ${user.activityLevel || 'Active'}
 
-Guidelines:
-1. Directly and specifically answer EXACTLY what the user asks. Never give generic boilerplate.
-2. If asked about workouts, exercises, or anatomy: provide clear biomechanical cues, set/rep ranges, target muscle heads, and progression tips.
-3. If asked about diet, nutrition, or macros: provide concrete numbers (calories, grams of protein/carbs/fat), food suggestions, and meal timing.
-4. If asked about recovery, soreness, sleep, or mindset: give science-backed practical advice with genuine human warmth.
-5. If analyzing an image: break down the foods, estimate calories/macros, or identify the gym equipment with proper form cues.
-6. Use clean, beautiful Markdown formatting with clear headings, bullet points, and bold emphasis for effortless reading.`;
+Core Directives & Behavioral Tuning:
+1. UNIVERSAL ANSWERING: Directly and thoroughly answer ANY question the user asks across ANY subject. Never refuse a question or claim that you only answer fitness questions.
+2. STRICT TOPIC RELEVANCE (NO FORCED NUTRITION PIVOTS): Answer EXACTLY what the user asks. If the user asks about science, technology, history, coding, exercise form, or life habits, focus 100% on that specific topic. DO NOT force-feed nutrition, macros, protein, or diet advice into answers unless the user specifically asks about food, diet, calories, or nutrition!
+3. WHEN ASKED ABOUT NUTRITION/DIET: Provide evidence-based nutritional science, exact numbers (calories, grams of protein/carbs/fat), food suggestions, and meal timing tailored to their preferences.
+4. WHEN ASKED ABOUT WORKOUTS/BIOMECHANICS: Provide clear anatomical cues, set/rep ranges, target muscle heads, and progression tips.
+5. WHEN ASKED ABOUT SCIENCE OR GENERAL KNOWLEDGE: Give lucid, engaging, accurate explanations with real-world examples and analogies.
+6. WHEN ANALYZING IMAGES:
+   - Food/meal photos: estimate calories, break down macronutrients, and analyze nutritional balance.
+   - Gym machine/exercise photos: identify equipment, target muscles, setup steps, and biomechanical safety cues.
+   - General images: describe and analyze the visual content helpfully and accurately.
+7. FORMATTING & TONE: Warm, articulate, encouraging, and intellectually rigorous. Use clean Markdown formatting with clear headings, bold key terms, and bullet points for effortless readability.`;
 
     const activeKey = (
       localStorage.getItem('fitwise_gemini_api_key') ||
@@ -633,10 +776,40 @@ Guidelines:
       };
       const smartReply = generateSmartFitnessResponse(textContent, userContext, imageAttachment);
 
+      let attachedPlan = null;
+      if (textContent.toLowerCase().includes('workout split') || textContent.toLowerCase().includes('4-day')) {
+        attachedPlan = {
+          id: `plan-${Date.now()}`,
+          title: "4-Day Hypertrophy Split",
+          type: "Workout",
+          schedule: [
+            { day: "Day 1", focus: "Upper Body (Power)", details: "Barbell Bench Press 4x6, Barbell Rows 4x6, Overhead Press 3x8, Pull-ups 3x8, Skull Crushers 3x10." },
+            { day: "Day 2", focus: "Lower Body (Quad Focus)", details: "Back Squats 4x6, Romanian Deadlifts 3x8, Walking Lunges 3x10/side, Standing Calf Raises 4x12." },
+            { day: "Day 3", focus: "Rest & Active Recovery", details: "Light cardio, core mobility, and hitting your 130g protein target." },
+            { day: "Day 4", focus: "Upper Body (Hypertrophy)", details: "Incline DB Press 3x10, Lat Pulldowns 3x10, Lateral Raises 4x12, Cable Flyes 3x12, Incline Curls 3x12." },
+            { day: "Day 5", focus: "Lower Body (Posterior Focus)", details: "Deadlifts 3x5, Leg Press 3x10, Hamstring Curls 3x12, Hanging Leg Raises 3x15." },
+          ],
+          footerPrompt: "What would you like to tackle next? We can map out a high-protein meal plan or customize set/rep progressions!"
+        };
+      } else if (textContent.toLowerCase().includes('vegetarian lunch') || textContent.toLowerCase().includes('lunch')) {
+        attachedPlan = {
+          id: `plan-${Date.now()}`,
+          title: "High-Protein Vegetarian Lunch Protocol",
+          type: "Meal",
+          schedule: [
+            { day: "Main", focus: "Paneer / Tofu Quinoa Bowl", details: "200g Grilled Paneer/Tofu with 1 cup cooked quinoa, sauteed bell peppers, spinach, and 1 tbsp olive oil (38g protein, 480 kcal)." },
+            { day: "Side", focus: "Lentil Dal / Chickpea Salad", details: "1 bowl Sprouted Moong/Chickpea salad with diced cucumber, tomatoes, lemon, chaat masala (14g protein, 210 kcal)." },
+            { day: "Hydration", focus: "Buttermilk / Chia Infusion", details: "Glass of spiced chaas with roasted cumin or lemon chia water (4g protein, 60 kcal)." }
+          ],
+          footerPrompt: "Hits ~56g protein for lunch! Would you like a healthy snack or dinner recommendation?"
+        };
+      }
+
       const aiMsg = {
         id: `ai-${Date.now()}`,
         sender: "assistant",
         text: smartReply,
+        plan: attachedPlan,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
 
@@ -708,6 +881,9 @@ Guidelines:
         clearChat,
         toast,
         showToast,
+        savedPlans,
+        addSavedPlan,
+        deleteSavedPlan,
         geminiApiKey,
         saveGeminiApiKey,
         authModalOpen,

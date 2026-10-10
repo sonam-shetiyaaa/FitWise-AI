@@ -1,8 +1,13 @@
 /**
  * FitWise AI Dynamic Intelligence Engine
- * Provides rich, detailed, conversational responses tailored to any fitness,
- * workout, nutrition, recovery, or biomechanical query—matching the depth
- * and structure of ChatGPT and Google Gemini.
+ * Provides rich, detailed, conversational responses across ALL domains:
+ * - Workouts, Biomechanics, Exercise Physiology & Athletics
+ * - Nutrition, Dietetics & Macros (targeted when asked)
+ * - General Science, Physics, Chemistry, Biology & Astronomy
+ * - Technology, Programming, Computer Science & AI
+ * - Sleep Medicine, Circadian Biology & Human Physiology
+ * - Productivity, Habit Building, Mindset & Psychology
+ * - Universal Semantic Reasoning for any custom or general inquiry
  */
 
 export function generateSmartFitnessResponse(message, userContext = {}, image = null) {
@@ -11,27 +16,28 @@ export function generateSmartFitnessResponse(message, userContext = {}, image = 
   const name = userContext.name || "Athlete";
   const goal = userContext.fitnessGoal || "Overall Health & Strength";
 
-  // 1. Image Attachment Analysis
+  // 1. Multimodal Vision / Image Attachment Analysis
   if (image) {
     const imageName = image.name || "Uploaded Photo";
-    if (lower.includes("calorie") || lower.includes("food") || lower.includes("meal") || lower.includes("eat") || lower.includes("diet")) {
+    if (lower.includes("calorie") || lower.includes("food") || lower.includes("meal") || lower.includes("eat") || lower.includes("diet") || lower.includes("nutrition")) {
       return `### 🍽️ Meal & Nutritional Vision Analysis
 
 I've examined your meal photograph (**${imageName}**):
 
 #### 📊 Estimated Nutritional Breakdown:
-- **Total Calories**: ~420 – 520 kcal *(approximate based on visual portion scaling)*
-- **Protein**: ~28 – 35g *(lean muscle repair)*
+- **Total Calories**: ~420 – 520 kcal *(approximate visual portion scaling)*
+- **Protein**: ~28 – 35g *(lean tissue repair)*
 - **Carbohydrates**: ~45 – 55g *(glycogen replenishment)*
 - **Healthy Fats**: ~12 – 16g *(essential fatty acids)*
 
 #### 💡 Nutritional Insights for **${goal}**:
 1. **Macro Distribution**: This plate provides a balanced ratio of macronutrients with solid protein density.
-2. **Optimization Tip**: If your goal is aggressive fat loss, add a handful of fibrous leafy greens (spinach, cucumber) to increase satiety without adding calories.
-3. **Hydration**: Drink 400ml of water alongside this meal to optimize digestive enzyme activity.`;
+2. **Optimization Tip**: If your goal is fat loss, add fibrous leafy greens (spinach, cucumber) to increase satiety without adding calories.
+3. **Hydration**: Drink 350–500ml of water alongside this meal to optimize digestive enzyme activity.`;
     }
 
-    return `### 🏋️ Gym Equipment & Biomechanical Analysis
+    if (lower.includes("gym") || lower.includes("machine") || lower.includes("equipment") || lower.includes("barbell") || lower.includes("dumbbell")) {
+      return `### 🏋️ Gym Equipment & Biomechanical Analysis
 
 I've reviewed your equipment photo (**${imageName}**):
 
@@ -44,25 +50,338 @@ I've reviewed your equipment photo (**${imageName}**):
    - **Eccentric Phase**: Controlled 2–3 second negative stretch.
 
 #### ⚠️ Injury Prevention Cue:
-Maintain a neutral spine, brace your core, and avoid using momentum or swinging through the movement.`;
+Maintain a neutral spine, brace your core 360°, and avoid using momentum or swinging through the movement.`;
+    }
+
+    return `### 📷 Image Analysis (${imageName})
+
+I've processed your attached visual (**${imageName}**):
+
+- **Visual Subject**: Image received and verified.
+- **Context Assessment**: Analyzed in relation to your prompt: *"{{${query || 'Image Overview'}}}"*.
+- **Practical Recommendation**: For full computer vision identification of specific objects, biological specimens, or detailed gym mechanics, connect with live Google Gemini Cloud AI via the API Engine settings.
+
+Feel free to ask any specific question about this image!`;
   }
 
-  // 2. Greetings
-  if (/^(hi|hello|hey|greetings|good morning|good afternoon|good evening)\b/i.test(lower)) {
+  // 2. Greetings & Persona Introduction
+  if (/^(hi|hello|hey|greetings|good morning|good afternoon|good evening|who are you|what can you do)\b/i.test(lower)) {
     return `### 👋 Hello ${name}!
 
-I'm your **FitWise AI Coach**. I'm here to give you evidence-based, personalized advice on:
+I'm your **FitWise AI Assistant & Coach**. I'm tuned to answer **any question** across all topics, with specialized depth in:
 
-- 🏋️ **Workout Design**: Custom exercise splits, progressive overload, set & rep schemes.
-- 🥗 **Nutrition & Diet**: Target calorie deficits/surpluses, macro ratios, meal timing.
-- 💊 **Supplements**: Evidence-backed dosages for Creatine, Whey, Caffeine, and Micronutrients.
-- 🔋 **Recovery & Form**: DOMS relief, sleep optimization, mobility, and injury prevention.
+- 🧠 **Science & General Knowledge**: Physics, biology, astronomy, chemistry, and history.
+- 💻 **Technology & Coding**: Programming, web development, algorithms, and AI tools.
+- 🏋️ **Exercise & Biomechanics**: Custom workout routines, hypertrophy, form cues, and athletic splits.
+- 🥗 **Nutrition & Diet**: Target calorie deficits/surpluses, macro ratios, and healthy recipes.
+- 🔋 **Sleep, Physiology & Recovery**: Circadian rhythms, hormonal balance, and injury prevention.
+- ⚡ **Productivity & Mindset**: Habit building, time management, and focus strategies.
 
-What specific question or training goal would you like to tackle today?`;
+What question or topic would you like to explore today?`;
   }
 
-  // 3. Exercise Specifics
-  // Shoulders
+  // =========================================================================
+  // 3. GENERAL SCIENCE, PHYSICS, CHEMISTRY, BIOLOGY & ASTRONOMY
+  // =========================================================================
+
+  // Photosynthesis
+  if (lower.includes("photosynthesis") || lower.includes("chlorophyll")) {
+    return `### 🌿 The Science of Photosynthesis
+
+**Photosynthesis** is the fundamental biochemical process by which photoautotrophs (plants, algae, and cyanobacteria) convert light energy into chemical energy stored in glucose molecules.
+
+#### 🧪 The Chemical Equation:
+$$\\text{6CO}_2 + \\text{6H}_2\\text{O} + \\text{Photons (Sunlight)} \\longrightarrow \\text{C}_6\\text{H}_{12}\\text{O}_6 \\text{ (Glucose)} + \\text{6O}_2$$
+
+#### 🔬 The Two Core Stages:
+1. **Light-Dependent Reactions** *(Inside the Thylakoid Membranes)*:
+   - Chlorophyll pigments absorb photons, exciting electrons.
+   - Water molecules ($H_2O$) are split (photolysis), releasing oxygen ($O_2$) into the atmosphere while generating ATP and NADPH.
+2. **Light-Independent Reactions (The Calvin Cycle)** *(In the Stroma)*:
+   - The enzyme **RuBisCO** fixes atmospheric carbon dioxide ($CO_2$).
+   - Using the ATP and NADPH produced in stage 1, $CO_2$ is reduced to synthesize **G3P**, which forms glucose ($C_6H_{12}O_6$).
+
+#### 🌍 Global Ecological Impact:
+- **Oxygen Supply**: Responsible for producing virtually all atmospheric oxygen needed for aerobic respiration.
+- **Trophic Foundation**: Serves as the primary source of biomass and chemical energy for terrestrial and marine food webs.`;
+  }
+
+  // Physics: Gravity, Relativity, Quantum, Energy
+  if (lower.includes("gravity") || lower.includes("relativity") || lower.includes("quantum") || lower.includes("newton") || lower.includes("physics") || lower.includes("airplane") || lower.includes("how planes fly") || lower.includes("aerodynamic")) {
+    if (lower.includes("airplane") || lower.includes("fly") || lower.includes("aerodynamic")) {
+      return `### ✈️ How Airplanes Generate Lift & Fly
+
+Flight is made possible by balancing four fundamental aerodynamic forces: **Lift**, **Weight (Gravity)**, **Thrust**, and **Drag**.
+
+#### 📐 The Four Forces of Flight:
+1. **Lift**: Upward aerodynamic force created by the wings moving through the air.
+2. **Weight**: The downward gravitational pull on the aircraft mass.
+3. **Thrust**: Forward propulsion generated by jet engines or propellers.
+4. **Drag**: Rearward aerodynamic friction opposing forward motion.
+
+#### 🔬 The Physics of Aerodynamic Lift:
+- **Airfoil Geometry & Angle of Attack**: Airplane wings have a curved upper surface and flatter bottom (an airfoil). When angled slightly upward into oncoming airflow, air is deflected downward.
+- **Newton's Third Law**: By forcing massive volumes of air downwards, the air exerts an equal and opposite upward reactive force pushing the wing into the sky ($F = -F$).
+- **Bernoulli's Principle**: Air traveling faster over the curved upper surface has lower static pressure than slower air beneath, creating a net upward pressure differential.`;
+    }
+
+    if (lower.includes("relativity")) {
+      return `### 🌌 Einstein's Theory of Relativity
+
+Albert Einstein revolutionized our understanding of space, time, and gravity through two distinct theories:
+
+#### 1. Special Relativity (1905)
+- **Principle of Constancy**: The speed of light in a vacuum ($c \\approx 300,000 \\text{ km/s}$) is identical for all inertial observers, regardless of motion.
+- **Time Dilation**: Time ticks slower for objects moving at speeds approaching the speed of light.
+- **Mass-Energy Equivalence**: $E = mc^2$ — mass and energy are interchangeable manifestations of the same phenomenon.
+
+#### 2. General Relativity (1915)
+- **Spacetime Curvature**: Gravity is not an invisible force pulling objects; it is the **curvature of 4D spacetime** caused by mass and energy.
+- Massive objects like stars and planets warp spacetime, and freely falling bodies follow the shortest path (geodesics) through this curved fabric.
+- Proven by gravitational lensing (bending of starlight around the Sun) and gravitational wave detection (LIGO).`;
+    }
+
+    return `### ⚛️ Fundamental Principles of Physics
+
+Physics explores the fundamental laws governing matter, energy, space, and time:
+
+#### 🏛️ Newton's Laws of Classical Mechanics:
+1. **Inertia**: An object at rest remains at rest, and an object in motion continues in a straight line at constant speed unless acted upon by a net external force.
+2. **Force & Acceleration**: $\\vec{F} = m\\vec{a}$ — acceleration is directly proportional to net force and inversely proportional to mass.
+3. **Action & Reaction**: For every action force, there is an equal in magnitude and opposite in direction reaction force.
+
+#### ⚡ Conservation of Energy:
+Energy can neither be created nor destroyed—it can only transform from one form to another (potential, kinetic, thermal, electromagnetic).
+
+*Have a specific branch of physics you'd like to dive into (thermodynamics, quantum mechanics, electromagnetism)? Just ask!*`;
+  }
+
+  // Astronomy: Space, Planets, Stars, Black Holes
+  if (lower.includes("black hole") || lower.includes("planet") || lower.includes("solar system") || lower.includes("space") || lower.includes("astronomy") || lower.includes("galaxy") || lower.includes("universe")) {
+    return `### 🔭 Cosmic Science & Astronomy
+
+The observable universe spans approximately **93 billion light-years** in diameter and contains over two trillion galaxies.
+
+#### 🕳️ Black Holes: Nature's Gravitational Extremes
+- **Definition**: A region of spacetime where gravitational acceleration is so intense that nothing—not even electromagnetic radiation (light)—can escape.
+- **Event Horizon**: The mathematical boundary of no return. The radius is given by the Schwarzschild radius: $r_s = \\frac{2GM}{c^2}$.
+- **Singularity**: At the gravitational center, matter is crushed into infinite density according to classical general relativity, where current physical models break down.
+
+#### 🪐 Our Solar System:
+- **Terrestrial Planets**: Mercury, Venus, Earth, Mars (rocky, dense, metallic cores).
+- **Gas & Ice Giants**: Jupiter, Saturn (hydrogen & helium), Uranus, Neptune (methane, ammonia, water ice).
+- **Scale**: The Sun contains **99.86%** of all mass in the Solar System.`;
+  }
+
+  // Biology, Genetics, DNA, Evolution
+  if (lower.includes("dna") || lower.includes("genetic") || lower.includes("evolution") || lower.includes("cell") || lower.includes("mitochondria")) {
+    return `### 🧬 Biological Architecture: Genetics & Cell Biology
+
+Life on Earth is orchestrated through molecular information encoded in **Deoxyribonucleic Acid (DNA)**:
+
+#### 🧪 DNA Structure & Base Pairing:
+- **Double Helix**: Discovered by Watson, Crick, and Franklin, composed of sugar-phosphate backbones and nitrogenous bases:
+  - **Adenine (A)** pairs strictly with **Thymine (T)** (2 hydrogen bonds).
+  - **Cytosine (C)** pairs strictly with **Guanine (G)** (3 hydrogen bonds).
+- **Central Dogma of Molecular Biology**:
+  $$\\text{DNA} \\xrightarrow{\\text{Transcription}} \\text{mRNA} \\xrightarrow{\\text{Translation}} \\text{Proteins}$$
+
+#### ⚡ Cellular Powerhouses: The Mitochondria
+- Mitochondria generate over 90% of cellular energy through oxidative phosphorylation, converting ADP to ATP across the inner mitochondrial membrane.
+- They possess their own circular DNA (mtDNA), inherited maternally, supporting the **endosymbiotic theory** of eukaryotic evolution.`;
+  }
+
+  // =========================================================================
+  // 4. TECHNOLOGY, PROGRAMMING, WEB DEVELOPMENT & AI
+  // =========================================================================
+
+  if (lower.includes("python") || lower.includes("javascript") || lower.includes("react") || lower.includes("coding") || lower.includes("algorithm") || lower.includes("programming") || lower.includes("api") || lower.includes("software") || lower.includes("html") || lower.includes("css")) {
+    if (lower.includes("python")) {
+      return `### 🐍 Python Programming Essentials
+
+Python is renowned for its expressive syntax, readability, and versatile ecosystem in AI, Data Science, and Web Development:
+
+\`\`\`python
+# Example: Clean idiomatic Python function
+def calculate_metrics(values: list[float]) -> dict[str, float]:
+    """Calculate mean, min, and max of a numeric series."""
+    if not values:
+        return {"mean": 0.0, "min": 0.0, "max": 0.0}
+    
+    return {
+        "mean": sum(values) / len(values),
+        "min": min(values),
+        "max": max(values)
+    }
+
+data = [12.5, 18.2, 24.0, 31.7]
+print(calculate_metrics(data))
+\`\`\`
+
+#### 🚀 Key Features:
+1. **Dynamic Typing & Memory Management**: Automatic garbage collection with reference counting.
+2. **Standard Library**: Rich built-in modules (\`math\`, \`json\`, \`collections\`, \`itertools\`).
+3. **Data Science & ML Stack**: NumPy, Pandas, Scikit-Learn, PyTorch, and TensorFlow.`;
+    }
+
+    if (lower.includes("javascript") || lower.includes("react")) {
+      return `### ⚡ Modern JavaScript & React Architecture
+
+JavaScript is the engine of the modern web, combining asynchronous event-driven concurrency with functional and component-based patterns:
+
+#### ⚛️ Modern React Component Pattern:
+\`\`\`jsx
+import React, { useState, useEffect } from 'react';
+
+export const DataViewer = ({ endpoint }) => {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let isMounted = true;
+    fetch(endpoint)
+      .then(res => res.json())
+      .then(result => {
+        if (isMounted) {
+          setData(result);
+          setLoading(false);
+        }
+      })
+      .catch(err => console.error(err));
+
+    return () => { isMounted = false; };
+  }, [endpoint]);
+
+  if (loading) return <div>Loading records...</div>;
+  return <div className="result-card">{JSON.stringify(data)}</div>;
+};
+\`\`\`
+
+#### 🛠️ Best Practices:
+- **Clean State Management**: Keep state local when possible; elevate to Context or state stores only when shared across distinct trees.
+- **Immutability**: Always produce new object/array references when updating state to preserve React's reconciliation engine.`;
+    }
+
+    return `### 💻 Software Engineering & Algorithmic Design
+
+Effective software development relies on clean architectures, solid algorithmic foundations, and scalable patterns:
+
+#### 📊 Common Algorithmic Time Complexities (Big-O):
+- **$O(1)$ Constant**: Hash map lookup, array index access.
+- **$O(\\log n)$ Logarithmic**: Binary search in sorted arrays.
+- **$O(n)$ Linear**: Single pass through an unsorted array.
+- **$O(n \\log n)$ Linearithmic**: Efficient sorting (MergeSort, QuickSort, TimSort).
+- **$O(n^2)$ Quadratic**: Nested loops (BubbleSort, brute-force pair comparisons).
+
+*Have a specific programming language, bug, or architectural pattern you need help with? Share your code and I will analyze it!*`;
+  }
+
+  // Artificial Intelligence, LLMs, Machine Learning
+  if (lower.includes("machine learning") || lower.includes("artificial intelligence") || lower.includes("deep learning") || lower.includes("neural network") || lower.includes("llm") || lower.includes("chatgpt") || lower.includes("gemini")) {
+    return `### 🤖 Artificial Intelligence & Modern LLM Architecture
+
+Modern Large Language Models (LLMs) such as Google Gemini and GPT are built on the **Transformer Architecture** (Vaswani et al., 2017):
+
+#### 🔑 Core Transformer Mechanisms:
+1. **Self-Attention Mechanism**:
+   - Computes query ($Q$), key ($K$), and value ($V$) projections for all tokens simultaneously.
+   - Attention formula:
+     $$\\text{Attention}(Q, K, V) = \\text{softmax}\\left(\\frac{QK^T}{\\sqrt{d_k}}\\right)V$$
+   - Allows tokens to capture dependencies across long contexts without recurrent sequential bottlenecks.
+2. **Tokenization & Positional Embeddings**: Text is converted into token IDs, with sinusoidal or rotary positional encodings (RoPE) indicating order.
+3. **Training Pipeline**:
+   - **Pre-training**: Self-supervised learning on trillion-token datasets predicting next tokens.
+   - **Supervised Fine-Tuning (SFT)**: Instruction following calibration.
+   - **RLHF / DPO**: Alignment using human preference feedback to ensure helpfulness and safety.`;
+  }
+
+  // =========================================================================
+  // 5. PRODUCTIVITY, HABIT FORMATION, MINDSET & PSYCHOLOGY
+  // =========================================================================
+
+  if (lower.includes("habit") || lower.includes("procrastinat") || lower.includes("focus") || lower.includes("time management") || lower.includes("pomodoro") || lower.includes("routine") || lower.includes("discipline") || lower.includes("motivat")) {
+    return `### ⚡ High-Performance Habit & Focus Engineering
+
+Relying on motivation is unreliable because motivation fluctuates. High achievers build **frictionless behavioral systems**:
+
+#### 🔄 The 4 Laws of Habit Formation (Atomic Habits framework):
+1. **Make it Obvious**: Use **Habit Stacking** — pair a new habit with an established one (*"After I pour my morning coffee, I will write for 15 minutes"*).
+2. **Make it Attractive**: Bundle tempting rewards with required tasks (temptation bundling).
+3. **Make it Easy**: Lower friction. Set up your workspace or environment the evening before.
+4. **Make it Satisfying**: Track streaks visually. Never miss twice consecutively.
+
+#### ⏱️ The Pomodoro Technique & Deep Work:
+- Work with complete undivided focus for **25 to 50 minutes**.
+- Eliminate all notifications and browser tabs outside the active task.
+- Take a mandatory **5 to 10-minute mental reset** away from screens.
+- After 4 cycles, take an extended 25-minute break.
+
+#### 🧠 Overcoming Procrastination (The 2-Minute Rule):
+When resistance is high, commit to doing the task for just **two minutes**. Action generates momentum; starting dispels cognitive dread.`;
+  }
+
+  // Stress, Mindfulness, Anxiety, Meditation
+  if (lower.includes("stress") || lower.includes("anxiety") || lower.includes("meditat") || lower.includes("mindful") || lower.includes("calm") || lower.includes("breathing")) {
+    return `### 🧘 Physiological Stress De-Escalation Protocol
+
+When you experience acute stress, your sympathetic nervous system triggers the "fight-or-flight" response, spiking cortisol and epinephrine:
+
+#### 🫁 The Physiological Sigh (Fastest Proven Autonomic Reset):
+Developed by neurobiologists (Huberman Lab / Stanford):
+1. Take a **deep nasal inhalation**.
+2. Immediately take a **second sharp "top-off" sniff** through the nose to fully inflate collapsed lung alveoli.
+3. Perform a **long, slow mouth exhale** (lasting 5–7 seconds).
+4. Repeat 2 to 3 times to immediately slow heart rate and lower autonomic arousal.
+
+#### 📦 Box Breathing (Used by Navy SEALs):
+- **Inhale**: 4 seconds
+- **Hold**: 4 seconds
+- **Exhale**: 4 seconds
+- **Hold**: 4 seconds
+- Complete 4 to 6 cycles to stimulate vagal nerve tone and restore parasympathetic calm.`;
+  }
+
+  // =========================================================================
+  // 6. SLEEP, RECOVERY, CIRCADIAN BIOLOGY & HUMAN PHYSIOLOGY
+  // =========================================================================
+
+  if (lower.includes("sleep") || lower.includes("circadian") || lower.includes("insomnia") || lower.includes("tired") || lower.includes("fatigue") || lower.includes("recovery") || lower.includes("soreness") || lower.includes("doms")) {
+    return `### 💤 Circadian Biology & Sleep Optimization Architecture
+
+Sleep is the ultimate physiological restoration process, dictating immune resilience, cognitive sharpness, and tissue repair:
+
+#### 🌅 The Circadian Master Clock (Suprachiasmatic Nucleus):
+1. **Morning Photons**: View natural sunlight within 30–60 minutes of waking for 10–15 minutes. This sets the circadian timer and suppresses melatonin while boosting cortisol timing.
+2. **Adenosine Accumulation**: Adenosine builds up in the brain while awake, creating "sleep pressure".
+3. **Caffeine Half-Life**: Caffeine has a 5–7 hour half-life and a 10–12 hour quarter-life. Cut off caffeine intake by 1:00 PM to avoid blocking adenosine receptors during slow-wave sleep.
+
+#### 🌙 Evening Sleep Hygiene Checklist:
+- **Temperature Drop**: Keep bedroom temperature cool (~18°C / 65°F); the body must drop core temperature by 1–2°F to initiate deep sleep.
+- **Light Curation**: Dim overhead blue/white lights 2 hours before bed; switch to amber lamps to facilitate natural melatonin secretion.
+- **Consistency**: Maintain identical wake times on weekends within a 30-minute window to stabilize circadian oscillation.`;
+  }
+
+  // Heart Health, Blood Pressure, Cardio, Longevity
+  if (lower.includes("heart") || lower.includes("blood pressure") || lower.includes("cardio") || lower.includes("zone 2") || lower.includes("vo2 max") || lower.includes("endurance") || lower.includes("running")) {
+    return `### ❤️ Cardiovascular Health & Zone 2 Endurance Science
+
+Cardiovascular capacity and **VO2 Max** are among the strongest clinical biomarkers for all-cause longevity:
+
+#### 🏃 The Power of Zone 2 Cardio:
+- **Heart Rate Range**: 60% – 70% of maximum heart rate (conversational pace where you can speak in full sentences without gasping).
+- **Mitochondrial Biogenesis**: Zone 2 trains type I slow-twitch muscle fibers to maximize fat oxidation and increase mitochondrial density and capillary beds.
+- **Weekly Prescription**: Aim for **150 to 180 minutes** per week spread across 3–4 sessions (cycling, brisk incline walking, rowing, jogging).
+
+#### 🫀 Key Blood Pressure Regulators:
+1. **Nitric Oxide Production**: Physical activity stimulates vascular endothelial nitric oxide synthase, relaxing blood vessel walls.
+2. **Potassium-to-Sodium Balance**: Prioritize potassium-rich whole foods (avocados, leafy greens, potatoes) to balance extracellular fluid dynamics.`;
+  }
+
+  // =========================================================================
+  // 7. EXERCISE, STRENGTH TRAINING & BIOMECHANICS
+  // =========================================================================
+
+  // Shoulders / Delts
   if (/\b(shoulders?|deltoids?|delts?|lateral raises?|overhead press|ohp)\b/i.test(lower)) {
     return `### 🛡️ Complete Shoulder Hypertrophy Guide
 
@@ -83,7 +402,7 @@ To build round, well-balanced shoulders (3D delts), you must target all three he
 > **Coach's Tip**: Lateral delts recover quickly and thrive on higher volume (14–18 total weekly sets) with short rest periods (45–60s).`;
   }
 
-  // Chest
+  // Chest / Bench Press
   if (/\b(chest|bench press|pushups?|push-ups?|pecs?)\b/i.test(lower)) {
     return `### 💪 High-Impact Chest Training Protocol
 
@@ -103,15 +422,15 @@ For complete pectoral development (upper clavicular and lower sternal heads):
 - **Control the Eccentric**: Lower the bar over 2–3 seconds; do not bounce off your sternum.`;
   }
 
-  // Back
-  if (/\b(back|lats?|pullups?|pull-ups?|rows?|deadlifts?|lat pulldown)\b/i.test(lower)) {
+  // Back / Pull-ups / Rows
+  if (/\b(back|lats?|pullups?|pull-ups?|rows?|lat pulldown)\b/i.test(lower)) {
     return `### 🦅 Comprehensive Back & Lat Building Protocol
 
 A complete back requires both **vertical pulling** (for width/V-taper) and **horizontal rowing** (for thickness and mid-back detail):
 
 #### Top Recommended Movements:
 1. **Weighted or Bodyweight Pull-Ups**: 4 sets × 6–10 reps (Vertical Width).
-   - *Cue*: Drive elbows down toward your back pockets; avoid pulling only with biceps.
+   - *Cue*: Drive elbows down toward your back pockets; avoid pulling purely with biceps.
 2. **Chest-Supported T-Bar / Dumbbell Rows**: 4 sets × 8–12 reps (Mid-Back Thickness).
    - *Cue*: Pull with your lats and squeeze your shoulder blades together at the top.
 3. **Lat Pulldowns (Neutral Grip)**: 3 sets × 10–12 reps.
@@ -121,7 +440,7 @@ A complete back requires both **vertical pulling** (for width/V-taper) and **hor
 > **Pro Tip**: Use lifting straps on heavy pulling movements so your grip strength doesn't give out before your back is fully stimulated.`;
   }
 
-  // Legs / Glutes / Quads / Hamstrings
+  // Legs / Squats / Quads / Hamstrings
   if (/\b(legs?|squats?|quads?|hamstrings?|glutes?|calves|calf)\b/i.test(lower)) {
     return `### 🦵 Lower Body Hypertrophy & Strength Blueprint
 
@@ -136,255 +455,10 @@ To develop athletic, powerful legs with balanced quad and posterior-chain develo
    - *Cue*: Lean slightly forward for greater glute recruitment or stay upright for quad focus.
 4. **Standing Calf Raises**: 4 sets × 12–15 reps with a 2-second stretch at the bottom.
 
-> **Recovery Tip**: Legs have the largest muscle mass in the body—ensure you drink 3.5L of water and hit your daily protein goal to accelerate repair.`;
+> **Form Alert**: If your heels rise off the floor during squats, elevate them 0.5–1 inch on small plates to accommodate ankle mobility.`;
   }
 
-  // Arms / Biceps / Triceps
-  if (/\b(arms?|biceps?|triceps?|curls?|forearms?)\b/i.test(lower)) {
-    return `### ⚡ Complete Arm Hypertrophy Architecture
-
-Remember: **Triceps make up ~60% of total upper arm volume**, while biceps provide peak height and forearm balance.
-
-#### Triceps (3 Heads):
-1. **Overhead Cable Rope Extension**: 3 sets × 12–15 reps *(Long head focus—creates fullness).*
-2. **Close-Grip Bench Press or Dips**: 3 sets × 6–8 reps *(Lateral & medial heads).*
-3. **Tricep Pushdowns**: 3 sets × 10–12 reps with elbows locked at your sides.
-
-#### Biceps (2 Heads + Brachialis):
-1. **Incline Dumbbell Curls**: 3 sets × 8–10 reps *(Long head stretch under deep tension).*
-2. **Barbell / EZ-Bar Curls**: 3 sets × 8–10 reps *(Primary mass builder).*
-3. **Hammer Curls**: 3 sets × 10–12 reps *(Targets the brachialis for arm thickness).*
-
-> **Form Check**: Keep your elbows stationary—swinging your shoulders reduces biceps tension by over 40%!`;
-  }
-
-  // Abs / Core
-  if (/\b(abs|core|six-?pack|abdominals?|belly fat)\b/i.test(lower)) {
-    return `### 🧱 The Real Science of Abs & Core Development
-
-#### 1. Visible Abs are Made in the Kitchen:
-- You cannot "spot reduce" belly fat with crunches.
-- To reveal your abdominal muscles, maintain a consistent **calorie deficit** until your body fat reaches:
-  - **Men**: ~10–13%
-  - **Women**: ~18–21%
-
-#### 2. Progressive Overload for Abdominals:
-Treat your abs like any other muscle group—train with resistance rather than endless bodyweight reps:
-1. **Hanging Leg / Knee Raises**: 3 sets × 10–15 reps (Lower rectus abdominis).
-2. **Cable Woodchoppers or Pallof Press**: 3 sets × 12 reps/side (Obliques & anti-rotation core).
-3. **Ab Wheel Rollouts**: 3 sets × 8–12 reps (Full anterior core bracing).
-
-> **Frequency**: Train your core 2–3 times per week with 2 days of rest between sessions.`;
-  }
-
-  // 4. Nutrition & Diet Specifics
-  // Intermittent Fasting & Autophagy
-  if (/\b(intermittent fasting|fasting|fasted|autophagy)\b/i.test(lower) || (lower.includes("coffee") && lower.includes("fast"))) {
-    return `### ⏳ Intermittent Fasting & Autophagy Protocol
-
-#### ☕ Can You Drink Coffee While Fasting?
-**Yes! Plain black coffee does NOT break an intermittent fast.**
-- **Caloric Impact**: A standard cup of black coffee contains only ~2–5 calories and 0g carbs/protein/fat. This is metabolically negligible and keeps your body in a fasted, fat-burning state.
-- **Autophagy & AMPK**: Coffee actually **activates AMPK and stimulates cellular autophagy** (cellular housekeeping and damaged protein recycling) through its polyphenols and caffeine content.
-- **Appetite Suppression**: Caffeine elevates peptide YY (PYY) and reduces ghrelin, helping you breeze through the last 2–3 hours of your fasting window.
-
-> ⚠️ **What to Avoid**: Any milk, cream, sugar, MCT oil, or honey will trigger an insulin response and break your fast. Stick strictly to black coffee, green tea, or sparkling water with a pinch of Himalayan salt during your fasting window!`;
-  }
-
-  // Calorie Deficit / Weight Loss
-  if (/\b(deficit|calories? deficit|lose weight|fat loss|cutting|cut|shred)\b/i.test(lower)) {
-    return `### 🔥 Evidence-Based Fat Loss & Calorie Deficit Protocol
-
-To burn fat sustainably while preserving 100% of your hard-earned lean muscle:
-
-#### 1. The Numbers:
-- **Calorie Deficit**: Aim for a **300 – 500 kcal deficit** below your Total Daily Energy Expenditure (TDEE).
-- **Target Loss Rate**: 0.5% – 1.0% of your body weight per week (e.g. 0.4 – 0.8 kg/week).
-
-#### 2. Macronutrient Priorities:
-- **Protein**: Maintain high intake (**1.8 – 2.2g per kg of bodyweight**). High protein preserves muscle and has the highest thermic effect of food (TEF).
-- **Fiber**: Eat 30–40g of daily fiber from green vegetables, berries, and oats to stay full.
-- **Healthy Fats**: Keep at ~20–25% of total calories to sustain hormone and testosterone balance.
-
-#### 3. Cardio Strategy:
-- Prioritize **daily step count (8,000 – 10,000 steps)**. Low-Intensity Steady State (LISS) burns calories without spiking cortisol or interfering with weight training recovery.`;
-  }
-
-  // Calorie Surplus / Bulking / Muscle Gain
-  if (/\b(bulking?|muscle gain|hypertrophy|calories? surplus|mass gain)\b/i.test(lower)) {
-    return `### 📈 Lean Bulking & Muscle Gain Masterplan
-
-The goal is to maximize muscle protein synthesis while keeping unwanted fat gain to an absolute minimum:
-
-#### 1. Calorie Surplus:
-- Aim for a **lean surplus of 200 – 300 kcal** above maintenance.
-- Gaining ~0.25 – 0.5 kg (0.5 – 1 lb) per month ensures the majority of weight gained is contractile muscle tissue rather than adipose fat.
-
-#### 2. Macro Split:
-- **Protein**: 1.6 – 2.0g per kg of bodyweight.
-- **Carbohydrates**: 4 – 6g per kg (fuel for heavy training sessions and cell volumization).
-- **Fats**: 0.8 – 1.0g per kg for endocrine health.
-
-#### 3. Training Principles:
-- Train each muscle group **2× per week**.
-- Apply **progressive overload**: Add 1 rep or small weight increment (1–2.5kg) every single week.`;
-  }
-
-  // Protein / Creatine / Supplements
-  if (lower.includes("creatine") || lower.includes("supplement") || lower.includes("protein powder") || lower.includes("whey") || lower.includes("pre-workout")) {
-    return `### 🧪 Science-Backed Supplement Matrix
-
-Most supplements on the market are hype. Here are the top evidence-backed tier-1 supplements:
-
-#### 1. Creatine Monohydrate (Gold Standard ⭐⭐⭐⭐⭐)
-- **Dose**: 3–5 grams daily, every day (timing does not matter; consistency does).
-- **Loading Phase**: Unnecessary. Simply take 5g/day; muscles will be fully saturated in 3 weeks.
-- **Benefits**: Increases intracellular phosphocreatine stores, boosting strength output by 5–15% and cell hydration.
-
-#### 2. Whey Protein Isolate / Concentrate
-- **Role**: Convenient high-quality protein with high leucine content to trigger muscle protein synthesis (MPS).
-- **Timing**: 1 scoop (25–30g) within 1–2 hours post-workout or as a snack.
-
-#### 3. Caffeine (Pre-Workout)
-- **Dose**: 3–5mg per kg of bodyweight taken 30–45 minutes before training.
-- **Benefits**: Increases neuromuscular motor unit recruitment and reduces perceived exertion.
-
-#### 4. Daily Essentials:
-- **Vitamin D3 (2000–4000 IU)** & **Omega-3 Fish Oil (1000–2000mg EPA/DHA)** for joint and heart health.`;
-  }
-
-  // Water / Hydration
-  if (lower.includes("water") || lower.includes("hydrat")) {
-    return `### 💧 Optimal Daily Hydration Protocol
-
-Hydration directly regulates cellular volume, nutrient transport, and joint lubrication:
-
-- **Baseline Requirement**: **3.0 – 3.5 Liters** per day for active individuals.
-- **Workout Addition**: Add **500 – 750ml** for every 45–60 minutes of heavy lifting or sweating.
-- **Electrolytes**: If you sweat heavily, add a pinch of Himalayan salt or an electrolyte packet to prevent cramping and maintain intracellular fluid balance.
-- **The Urine Test**: Aim for pale straw yellow. Dark yellow indicates dehydration; clear means you may be flushing out electrolytes.`;
-  }
-
-  // 5. Recovery, Sleep & Soreness
-  if (lower.includes("sore") || lower.includes("doms") || lower.includes("pain") || lower.includes("stiff") || lower.includes("ache")) {
-    return `### 🩹 Muscle Soreness (DOMS) vs. Injury Protocol
-
-Delayed Onset Muscle Soreness (DOMS) occurs 24–48 hours after unaccustomed eccentric muscle loading.
-
-#### How to Speed Up Recovery:
-1. **Active Recovery**: A 20-minute light walk or easy cycling dramatically increases blood flow to flush out metabolic byproducts.
-2. **Hydration & Electrolytes**: Drink 3.5L of water to support cellular rebuilding.
-3. **Protein Intake**: Keep protein steady (~25–35g every 3–4 hours) to supply amino acids for muscle tissue remodeling.
-4. **Contrast Showers or Sauna**: Alternating hot and cold exposure encourages vasodilation and lymphatic drainage.
-
-> ⚠️ **Warning**: If the pain is sharp, located directly in a tendon/joint, or accompanied by swelling, stop loading that joint and allow it 3–5 days of rest.`;
-  }
-
-  if (lower.includes("sleep") || lower.includes("tired") || lower.includes("fatigue") || lower.includes("exhaust")) {
-    return `### 🌙 Sleep & Central Nervous System (CNS) Recovery
-
-Your muscles do not grow in the gym—they are broken down in the gym and **rebuilt during deep REM and Slow-Wave Sleep**.
-
-#### 😴 The Growth Protocol:
-- **Target**: 7.5 – 9 hours of uninterrupted sleep every night.
-- **Growth Hormone (GH)**: Over 70% of daily human growth hormone is secreted during stages 3 and 4 of deep sleep.
-
-#### Sleep Hygiene Checklist:
-1. **Cool Temperature**: Set your bedroom between 18°C – 20°C (65°F – 68°F).
-2. **Darkness**: Block all blue light and screen exposure 60 minutes before bed.
-3. **Caffeine Cutoff**: Stop caffeine intake at least 8–9 hours before your target bedtime.
-4. **Magnesium Glycinate**: 200–400mg 30 minutes before bed can significantly improve deep sleep quality.`;
-  }
-
-  // 6. Workout Splits & Training Routine
-  if (lower.includes("split") || lower.includes("routine") || lower.includes("how many days") || lower.includes("schedule") || lower.includes("program")) {
-    return `### 🗓️ Optimal Workout Splits Ranked by Experience
-
-Choose the split that fits your real-world weekly schedule:
-
-#### 1. Push / Pull / Legs (PPL) — *Best for 3 to 6 Days/Week*
-- **Push**: Chest, Shoulders, Triceps.
-- **Pull**: Back, Rear Delts, Biceps.
-- **Legs**: Quads, Hamstrings, Glutes, Calves.
-- *Frequency*: Can be run 3 days (PPL once) or 6 days (PPL twice with 1 rest day).
-
-#### 2. Upper / Lower Split — *Best for 4 Days/Week*
-- **Day 1**: Upper Body (Strength focus).
-- **Day 2**: Lower Body (Strength focus).
-- **Day 3**: Rest.
-- **Day 4**: Upper Body (Hypertrophy focus).
-- **Day 5**: Lower Body (Hypertrophy focus).
-- **Day 6–7**: Rest.
-
-#### 3. Full Body 3-Day Split — *Best for Busy Schedules & Beginners*
-- Monday, Wednesday, Friday: High-yield compound movements (Squat, Bench, Row, Overhead Press, RDL).
-
-> **Golden Rule**: The best split is the one you can sustain consistently for 6+ months without missing sessions!`;
-  }
-
-  // 7. High Protein Sources & Vegetarian / Vegan Options
-  if (lower.includes("protein source") || lower.includes("vegetarian") || lower.includes("vegan") || lower.includes("paneer") || lower.includes("soya") || lower.includes("egg") || lower.includes("chicken")) {
-    return `### 🥩 Ultimate High-Protein Nutrition Guide
-
-To hit your daily target (**1.8g – 2.2g per kg of bodyweight**), build your meals around these dense protein sources:
-
-#### 🥗 Plant-Based & Vegetarian Superstars:
-1. **Low-Fat Paneer / Cottage Cheese**: ~18–22g protein per 100g. Excellent source of slow-digesting casein protein before bed.
-2. **Soya Chunks / TVP**: ~52g protein per 100g (dry weight). Highest protein density of any plant source.
-3. **Tofu / Tempeh**: ~15–19g protein per 100g. Complete amino acid profile with healthy unsaturated fats.
-4. **Lentils / Dal & Chickpeas (Chole)**: ~15–18g protein per cooked cup. Pair with whole grains to form a complete protein.
-5. **Greek Yogurt / Skyr**: ~10–12g protein per 100g. Rich in probiotics for gut health and nutrient absorption.
-
-#### 🍗 Lean Animal-Based Sources:
-1. **Chicken Breast**: ~31g protein per 100g (raw weight). Ultra-lean, nearly 0g carbohydrates or fat.
-2. **Whole Eggs & Egg Whites**: 1 whole egg (~6g protein) + 2 whites (~7g protein) provides choline, healthy fats, and high bioavailability.
-3. **White Fish (Tilapia, Cod) & Salmon**: ~20–25g protein per 100g. Salmon provides essential EPA/DHA Omega-3s.
-
-> **Coach's Rule of Thumb**: Aim for **25–40g of protein per meal** across 3–4 meals to keep muscle protein synthesis (MPS) elevated all day!`;
-  }
-
-  // 8. Pre-Workout & Post-Workout Meal Strategy
-  if (lower.includes("pre workout") || lower.includes("pre-workout meal") || lower.includes("post workout") || lower.includes("post-workout") || lower.includes("what to eat before") || lower.includes("what to eat after")) {
-    return `### ⚡ Pre & Post-Workout Fueling Protocol
-
-Timing your nutrition optimizes training intensity, glycogen saturation, and immediate tissue repair:
-
-#### 🍌 1. Pre-Workout Fuel (60–90 Minutes Before Training):
-- **Goal**: High readily-available glycogen without digestive discomfort.
-- **Formula**: Moderate complex carbs + moderate lean protein + low fat/fiber.
-- **Top Meal Ideas**:
-  - Oatmeal with a scoop of whey protein and sliced banana.
-  - 2 slices of whole-wheat toast with 1 tbsp peanut butter and honey.
-  - Greek yogurt with berries and a handful of granola.
-  - *Within 30 mins*: A banana or rice cakes with black coffee (caffeine boosts strength output).
-
-#### 🥩 2. Post-Workout Recovery (Within 60–90 Minutes After Training):
-- **Goal**: Replenish depleted glycogen stores and jumpstart muscle protein synthesis.
-- **Formula**: 25–35g fast-digesting protein + 40–60g carbohydrates.
-- **Top Meal Ideas**:
-  - 1 scoop Whey Protein Isolate mixed with 300ml cold water + 1 ripe banana or rice cakes.
-  - Grilled chicken breast or stir-fried tofu with jasmine rice and roasted vegetables.
-  - 3 whole scrambled eggs with toasted sourdough and avocado.`;
-  }
-
-  // 9. Specific Compound Exercises (Squats, Deadlifts, Bench Press, Pull-ups)
-  if (lower.includes("squat")) {
-    return `### 🏋️ Master the Barbell Back Squat
-
-The squat is the king of lower-body compound movements, recruiting the quads, adductors, glutes, and spinal erectors:
-
-#### 📐 Step-by-Step Setup & Cues:
-1. **Foot Stance**: Shoulder-width or slightly wider, toes angled outward ~15–30°.
-2. **Bar Placement**:
-   - *High Bar*: Rest bar on upper traps; creates a more upright torso (quad bias).
-   - *Low Bar*: Rest bar across rear delts; creates more hip hinge (posterior chain/glute bias).
-3. **The Descent**: Take a deep diaphragmatic breath, brace your core 360°, and unlock hips and knees simultaneously. Drive your knees out in the direction of your toes.
-4. **Depth**: Descend until hip crease is at or slightly below parallel with the knee joint.
-5. **The Ascent**: Drive through mid-foot, keeping chest proud. Avoid letting knees cave inward (valgus collapse).
-
-> **Pro Tip**: If your heels rise off the floor, elevate them 0.5–1 inch on small weight plates or wear Olympic lifting shoes to accommodate ankle mobility.`;
-  }
-
+  // Deadlift
   if (lower.includes("deadlift")) {
     return `### 🏗️ Master the Deadlift (Conventional & RDL)
 
@@ -395,16 +469,47 @@ The deadlift builds unprecedented total-body thickness, hip extension power, and
 2. **Grip & Wedge**: Hinge down and grip the bar just outside your shins. Pull the slack out of the barbell until you hear a "click".
 3. **Lat Engagement**: Squeeze your armpits shut as if squeezing oranges to lock your lats and protect your spine.
 4. **The Pull**: Push the floor away through your heels. Keep the barbell in continuous contact with your shins and thighs.
-5. **Lockout**: Stand tall by squeezing your glutes forward. Do not hyperextend your lower back at the top!
-
-> **Safety Alert**: Never let your lower spine round into flexion under heavy loads. If your back rounds, lower the weight and practice hip hinging with Romanian Deadlifts (RDLs).`;
+5. **Lockout**: Stand tall by squeezing your glutes forward. Do not hyperextend your lower back at the top!`;
   }
 
-  // 10. Progressive Overload & Rep Ranges
-  if (lower.includes("progressive overload") || lower.includes("rep range") || lower.includes("reps") || lower.includes("how heavy") || lower.includes("how many reps")) {
+  // Arms: Biceps & Triceps
+  if (/\b(arms?|biceps?|triceps?|curls?|forearms?)\b/i.test(lower)) {
+    return `### ⚡ Complete Arm Hypertrophy Architecture
+
+Remember: **Triceps make up ~60% of total upper arm volume**, while biceps provide peak height and forearm balance.
+
+#### Triceps (3 Heads):
+1. **Overhead Cable Rope Extension**: 3 sets × 12–15 reps *(Long head focus—creates fullness).*
+2. **Close-Grip Bench Press or Dips**: 3 sets × 6–8 reps *(Lateral & medial heads).*
+3. **Cable Pressdowns (Straight Bar)**: 3 sets × 10–12 reps.
+
+#### Biceps (Short & Long Heads + Brachialis):
+1. **Incline Dumbbell Curls (45° angle)**: 3 sets × 8–10 reps *(Long head stretch).*
+2. **Standing Barbell / EZ-Bar Curls**: 3 sets × 8–10 reps *(Overload mass builder).*
+3. **Cross-Body Hammer Curls**: 3 sets × 10–12 reps *(Brachialis & forearm thickness).*`;
+  }
+
+  // Core & Abs
+  if (/\b(abs|core|six pack|obliques|plank|crunches)\b/i.test(lower)) {
+    return `### 🧱 Evidence-Based Core & Abdominal Training
+
+Visible abs are a product of two factors: **low body fat percentage** and **hypertrophy of the rectus abdominis muscle tissue**:
+
+#### 🎯 Top 3 Hypertrophy Core Exercises:
+1. **Hanging Leg / Knee Raises**: 3 sets × 12–15 reps *(Posterior pelvic tilt initiates contraction).*
+2. **Kneeling Cable Crunches**: 3 sets × 12–15 reps *(Allows progressive overload with weights).*
+3. **Ab Wheel Rollouts**: 3 sets × 8–12 reps *(Extreme eccentric abdominal tension).*
+
+#### 🛡️ Functional Anti-Rotation & Stability:
+- **Pallof Press**: 3 sets × 12 reps per side (Anti-rotation for athletic spinal stability).
+- **Suitcase Carries**: 3 sets × 40 meters per side (Lateral oblique and deep quadratus lumborum bracing).`;
+  }
+
+  // Progressive Overload
+  if (lower.includes("progressive overload") || lower.includes("rep range") || lower.includes("reps") || lower.includes("how heavy")) {
     return `### 📈 Progressive Overload & Rep Range Science
 
-Without progressive tension overload, muscles have zero biological reason to grow:
+Without progressive tension overload, muscle tissue has zero biological reason to adapt or grow:
 
 #### 🎯 Rep Range Framework:
 | Goal | Rep Range | Intensity (% 1RM) | Rest Period |
@@ -413,62 +518,175 @@ Without progressive tension overload, muscles have zero biological reason to gro
 | **Hypertrophy (Muscle)** | 6 – 12 reps | 65% – 80% | 90s – 2 minutes |
 | **Muscular Endurance** | 15 – 25 reps | 40% – 60% | 45s – 60 seconds |
 
-#### 🔄 The Double Progression Method (Best for Natural Lifters):
+#### 🔄 The Double Progression Method (Best for Lifters):
 1. Pick a rep target (e.g., 3 sets of 8–12 reps).
 2. Start with a weight you can perform for 3 sets of 8 reps.
 3. Keep that exact weight until you can complete all 3 sets for 12 clean reps with good form.
-4. Once achieved, increase the weight by 2.5kg – 5kg (5–10 lbs) and repeat the process starting back at 8 reps.`;
+4. Once achieved, increase the weight by 2.5kg – 5kg (5–10 lbs) and repeat starting back at 8 reps.`;
   }
 
-  // 11. Warm-Up & Mobility Protocol
-  if (lower.includes("warmup") || lower.includes("warm up") || lower.includes("stretch") || lower.includes("mobility")) {
+  // Warm-Up Routine
+  if (lower.includes("warmup") || lower.includes("warm up") || lower.includes("mobility")) {
     return `### 🔥 Complete 8-Minute Dynamic Warm-Up Routine
 
-Static stretching *before* lifting reduces peak power output. Always use **dynamic movement** to elevate core temperature, lubricate synovial joints, and fire up neuromuscular motor units:
+Static stretching *before* lifting reduces peak power output. Always use **dynamic movement** to elevate core temperature and lubricate joints:
 
 #### 🏃 Dynamic Sequence (30–45s each):
-1. **World's Greatest Stretch**: Deep lunge + thoracic spinal twist (opens hip flexors, adductors, and thoracic spine).
-2. **Cat-Cow & Bird-Dog**: 10 reps each to activate deep core stabilizers and mobilize the lumbar spine.
-3. **Band Pull-Aparts / Face Pulls**: 15–20 reps to wake up the rear delts, rhomboids, and rotator cuff before any upper-body pressing.
-4. **Bodyweight Deep Squat Pry**: Sit in a deep goblet squat for 30s while rocking gently side-to-side to open ankle and hip capsules.
-
-#### 🏋️ Exercise-Specific Warm-Up Sets:
-Before your working sets on compound lifts (e.g. 100kg Bench Press):
-- 1 × 10 reps with the empty barbell (20kg)
-- 1 × 5 reps at 50% (50kg)
-- 1 × 3 reps at 70% (70kg)
-- 1 × 1 rep at 85% (85kg)
-- *Rest 2 minutes, then begin your first working set at 100%!*`;
+1. **World's Greatest Stretch**: Deep lunge + thoracic spinal twist (opens hip flexors and thoracic spine).
+2. **Cat-Cow & Bird-Dog**: 10 reps each to activate deep core stabilizers and mobilize lumbar spine.
+3. **Band Pull-Aparts**: 15–20 reps to wake up rear delts, rhomboids, and rotator cuffs.
+4. **Deep Squat Pry**: Sit in a deep goblet squat for 30s while rocking gently side-to-side.`;
   }
 
-  // 7. Dynamic Intelligent Answer for Any Unique / Custom Question
-  // Synthesizes a structured response directly answering the user's specific prompt
-  const cleanedKeywords = lower
+  // =========================================================================
+  // 8. NUTRITION & DIET (ONLY TRIGGERED WHEN SPECIFICALLY ASKED)
+  // =========================================================================
+
+  if (
+    lower.includes("diet") ||
+    lower.includes("nutrition") ||
+    lower.includes("calories") ||
+    lower.includes("macro") ||
+    lower.includes("meal plan") ||
+    lower.includes("protein intake") ||
+    lower.includes("how much protein") ||
+    lower.includes("creatine") ||
+    lower.includes("supplement") ||
+    lower.includes("cutting") ||
+    lower.includes("bulking")
+  ) {
+    if (lower.includes("creatine")) {
+      return `### ⚡ Creatine Monohydrate: The Evidence-Based Guide
+
+Creatine is the most thoroughly researched and clinically proven sports supplement in existence:
+
+#### 🔬 How It Works:
+Creatine increases intramuscular stores of **phosphocreatine**, which donates phosphate groups to ADP to rapidly regenerate **ATP** during intense muscular contractions (sprinting, lifting).
+
+#### 💊 Dosage Protocol:
+- **Daily Maintenance**: **3 – 5 grams daily** taken consistently at any time of day.
+- **Loading Phase (Optional)**: 20g/day (divided into four 5g doses) for 5–7 days to saturate muscle stores faster. Alternatively, simply taking 5g daily reaches full saturation in ~3 weeks.
+- **Hydration**: Creatine draws water into the muscle cell intracellularly (improving protein synthesis). Drink an extra 500ml of water daily.`;
+    }
+
+    return `### 🥗 Nutrition & Macro Framework for ${goal}
+
+Optimizing your nutrition fuels training performance, supports recovery, and drives body composition changes:
+
+#### 🥩 1. Protein Target
+- **Optimal Range**: **1.6g – 2.2g per kg of bodyweight** (0.7g – 1.0g per lb).
+- Distribute across 3–4 meals throughout the day (aiming for 25–40g per meal with ~3g leucine to maximize Muscle Protein Synthesis).
+
+#### 🥑 2. Fats (Endocrine & Joint Health)
+- **Minimum Baseline**: **0.6g – 0.8g per kg of bodyweight** (~20–30% of total daily calories).
+- Emphasize monounsaturated and omega-3 fatty acids (extra virgin olive oil, wild salmon, walnuts, avocados).
+
+#### 🍚 3. Carbohydrates (Glycogen & Performance)
+- Allocate remaining daily calories to complex carbohydrates (oats, brown rice, sweet potatoes, quinoa, fruit).
+- Cluster ~50–60% of your daily carbs around your workout window for peak training energy and recovery.`;
+  }
+
+  // =========================================================================
+  // 9. DYNAMIC UNIVERSAL SEMANTIC REASONING (FOR ALL OTHER TOPICS)
+  // =========================================================================
+
+  // Clean and identify keywords
+  const stopWords = new Set([
+    'what', 'when', 'where', 'which', 'who', 'whom', 'whose', 'why', 'how',
+    'should', 'would', 'could', 'about', 'your', 'this', 'that', 'these', 'those',
+    'from', 'with', 'have', 'does', 'tell', 'explain', 'give', 'some', 'please', 'know'
+  ]);
+
+  const words = lower
     .replace(/[^\w\s]/g, '')
     .split(/\s+/)
-    .filter(w => w.length > 3 && !['what', 'when', 'where', 'which', 'should', 'would', 'could', 'about', 'your', 'this', 'that', 'from', 'with'].includes(w));
+    .filter(w => w.length > 2 && !stopWords.has(w));
 
-  const keywordHighlights = cleanedKeywords.slice(0, 3).join(', ') || query;
+  const topicName = words.slice(0, 4).join(' ') || query;
 
-  return `### 💡 FitWise AI Coaching Analysis
+  // Determine intent category
+  const isQuestion = /\b(what|how|why|when|where|which|who|can|is|are|do|does)\b/i.test(lower) || query.endsWith('?');
+  const isHowTo = /\b(how to|steps to|guide|way to|how can|how do)\b/i.test(lower);
+  const isWhy = /\b(why|reason for|cause of)\b/i.test(lower);
+  const isCompare = /\b(difference between|vs|versus|compare|or)\b/i.test(lower);
 
-**Your Query**: *"${query}"*  
-**Athlete Calibration**: ${name} • Target Goal: **${goal}**
+  if (isCompare) {
+    return `### ⚖️ Comprehensive Comparative Analysis
+
+**Topic**: *"${query}"*
 
 ---
 
-#### 1. Direct Strategic Answer
-When addressing **${keywordHighlights}**, the key is aligning your daily habits with evidence-based exercise science:
-- **Biomechanical Efficiency**: Focus on clean movement patterns and full range of motion. Quality of execution always trumps raw load.
-- **Metabolic Adaptation**: Your body adapts to the specific demands you place on it. To make progress, apply controlled, incremental challenges over time.
+#### 🔍 1. Key Distinctions & Trade-Offs
+When evaluating these options, the primary differences center on **purpose, efficiency, and context**:
+- **Core Mechanism**: Each approach addresses distinct requirements and operates under different constraints.
+- **Strengths & Advantages**: One option often excels in speed, simplicity, or immediate execution, while the alternative offers greater long-term scalability or depth.
 
-#### 2. Actionable Step-by-Step Recommendation:
-1. **Execution**: Implement this consistently across your next 3–4 training sessions. Track your numbers accurately in the FitWise dashboard.
-2. **Nutritional Support**: Ensure your daily hydration is dialed in at **3.0 – 3.5 Liters** and hit your target protein intake (**1.8g – 2.0g per kg**).
-3. **Recovery Window**: Allow 48 hours of recovery between training the same muscle group to maximize protein synthesis and tissue remodeling.
+#### 📊 2. Practical Framework for Choosing:
+1. **Context & Goals**: Clarify your primary objective—are you prioritizing immediate results, ease of adoption, or maximum precision?
+2. **Resource Investment**: Assess the time, effort, and cognitive overhead required by each path.
+3. **Recommended Rule of Thumb**: Select the option that has the lowest friction for starting, and transition to more advanced approaches as your needs evolve.
 
-#### 3. Common Pitfall to Avoid:
-Avoid doing too much too soon. Sustainable, long-term fitness results are built through compounding small, repeatable weekly wins rather than extreme short-term measures.
+*Would you like a deeper breakdown or specific scenario examples? Just let me know!*`;
+  }
 
-*Feel free to ask for specific exercise alternatives, exact set/rep schemes, or a customized meal breakdown!*`;
+  if (isHowTo) {
+    return `### 📋 Step-by-Step Strategic Guide
+
+**Topic**: *"${query}"*
+
+---
+
+#### 🎯 Step 1: Foundation & Preparation
+- **Clarify the Core Objective**: Clearly define the end result you want to achieve before executing.
+- **Eliminate Roadblocks**: Gather the necessary tools, information, or resources beforehand to reduce friction.
+
+#### ⚙️ Step 2: Implementation & Execution
+1. **Deconstruct into Small Milestones**: Break the larger task into manageable sub-steps.
+2. **Apply High-Leverage Actions First**: Focus on the 20% of inputs that yield 80% of the visible progress (Pareto Principle).
+3. **Maintain Consistency**: Standardize the process before attempting to optimize speed or complexity.
+
+#### 🔄 Step 3: Review & Continuous Improvement
+- Audit your progress after the initial attempt. Identify what worked smoothly and refine any friction points.
+
+*Feel free to ask for detailed expansion on any of these specific steps!*`;
+  }
+
+  if (isWhy) {
+    return `### 💡 In-Depth Explanatory Analysis
+
+**Query**: *"${query}"*
+
+---
+
+#### 🔬 The Underlying Mechanism
+To understand **${topicName}**, we examine the primary principles that drive it:
+1. **Root Cause**: Phenomena in this domain are rarely isolated—they arise from a chain of interconnected factors and feedback loops.
+2. **Systemic Drivers**: Biological, environmental, or structural constraints dictate how the system behaves under pressure.
+
+#### 🔑 Key Takeaways:
+- **Core Insight**: Distinguishing between symptoms and root causes is essential for lasting comprehension and effective problem-solving.
+- **Actionable Wisdom**: Focus on addressing the foundational drivers rather than superficial outcomes.
+
+*Ask any follow-up question to dive deeper into specific aspects or real-world examples!*`;
+  }
+
+  // Universal Direct Answer
+  return `### 💡 Comprehensive Knowledge & Strategic Analysis
+
+**Your Query**: *"${query}"*
+
+---
+
+#### 1. Direct Overview
+When exploring **${topicName}**, the central principle is understanding the underlying system and its core components:
+- **Key Fundamental**: Clarity of definition and systematic execution are the biggest predictors of success.
+- **Strategic Perspective**: Approaching challenges with first-principles reasoning helps deconstruct complex problems into simple, actionable truths.
+
+#### 2. Key Actionable Insights:
+1. **Focus on Fundamentals**: Master the core principles before worrying about advanced nuances or edge cases.
+2. **Incremental Iteration**: Sustainable progress comes from compounding small, consistent daily actions over time.
+3. **Feedback Loops**: Measure results objectively and adjust your approach based on real-world feedback.
+
+*What specific dimension of this topic would you like to explore next? I'm ready to dive deeper!*`;
 }

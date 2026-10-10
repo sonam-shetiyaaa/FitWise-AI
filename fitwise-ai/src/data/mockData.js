@@ -1,18 +1,20 @@
 export const initialProfile = {
-  name: "Alex Morgan",
-  email: "alex.morgan@fitwise.ai",
-  age: 26,
+  name: "Alex",
+  email: "athlete@nutrifit.app",
+  age: 20,
   gender: "Male",
-  height: 178, // cm
-  weight: 74.5, // kg
-  targetWeight: 72.0, // kg
-  fitnessGoal: "Muscle Gain & Fat Loss",
-  activityLevel: "Moderately Active (3-5 sessions/week)",
+  height: 173, // cm
+  weight: 65, // kg
+  targetWeight: 70, // kg
+  fitnessGoal: "Muscle Hypertrophy",
+  goal: "Muscle Hypertrophy",
+  activityLevel: "Moderately Active",
+  dietaryPreferences: ["Vegetarian", "Non-Veg"],
+  dietaryRestrictions: "None",
   fitnessExperience: "Intermediate (1-3 years)",
   workoutLocation: "Commercial Gym",
   workoutDuration: "45-60 min",
   foodPreference: "High-Protein Balanced",
-  dietaryRestrictions: "Low Lactose, Moderate Gluten",
   preferredCuisine: "Mediterranean & Asian",
   waterIntake: "3.5 Liters",
   sleepDuration: "7-8 hours",
@@ -406,13 +408,47 @@ export const initialProgress = {
   ]
 };
 
-export const sampleChatSuggestions = [
-  "What is the optimal post-workout meal for muscle protein synthesis?",
-  "Can you create a 30-minute high-energy dumbbells-only upper body routine?",
-  "How should I adjust my macros if I want to lose 0.5kg this week?",
-  "My knees feel slight discomfort during squats. What form cues help?",
-  "Give me 3 high-protein snack ideas under 200 calories that require no cooking"
-];
+export const sampleChatSuggestionsByCategory = {
+  All: [
+    "What is photosynthesis and how does it sustain life on Earth?",
+    "Can you create a 30-minute dumbbells-only upper body routine?",
+    "How do airplanes generate aerodynamic lift to fly?",
+    "What are the best methods to build unbreakable daily habits?",
+    "Explain how the circadian rhythm regulates deep sleep and energy levels",
+    "How should I adjust my macros if I want to lose 0.5kg this week?",
+    "How do I write an idiomatic function in Python with error handling?"
+  ],
+  Workouts: [
+    "Can you create a 30-minute dumbbells-only upper body routine?",
+    "My knees feel slight discomfort during squats. What form cues help?",
+    "What are the most effective exercises to isolate the rear delts?",
+    "Explain how the double progression overload method works",
+    "What is the best 4-day workout split for natural lifters?"
+  ],
+  Diet: [
+    "What is the optimal post-workout meal for muscle protein synthesis?",
+    "How should I adjust my macros if I want to lose 0.5kg this week?",
+    "Give me 3 high-protein snack ideas under 200 calories that require no cooking",
+    "What is the daily recommended dosage and timing for Creatine Monohydrate?",
+    "What are balanced, nutrient-dense breakfast options for sustained focus?"
+  ],
+  Recovery: [
+    "Explain how the circadian rhythm regulates deep sleep and energy levels",
+    "What are the best evidence-based techniques to relieve intense muscle soreness (DOMS)?",
+    "How does chronic stress and cortisol affect metabolism and fat loss?",
+    "What is Zone 2 cardio and why is it crucial for mitochondrial longevity?",
+    "How can I perform the physiological sigh to instantly downregulate stress?"
+  ],
+  General: [
+    "What is photosynthesis and how does it convert sunlight into energy?",
+    "How do airplanes generate aerodynamic lift to fly?",
+    "What are high-leverage techniques to beat procrastination and stay focused?",
+    "Explain the difference between Special and General Relativity in simple terms",
+    "How do modern Large Language Models use the Transformer attention mechanism?"
+  ]
+};
+
+export const sampleChatSuggestions = sampleChatSuggestionsByCategory.All;
 
 export const sampleChatKnowledge = [
   {

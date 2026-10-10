@@ -6,6 +6,17 @@ const ACTIVE_SESSION_KEY = 'fitwise_active_user_session_v1';
 // Seed demo user
 const SEED_USERS = [
   {
+    name: "Alex",
+    email: "athlete@nutrifit.app",
+    password: "demo1234",
+    profile: {
+      ...initialProfile,
+      name: "Alex",
+      email: "athlete@nutrifit.app"
+    },
+    createdAt: new Date().toISOString()
+  },
+  {
     name: "Alex Morgan",
     email: "alex.morgan@fitwise.ai",
     password: "demo1234",
