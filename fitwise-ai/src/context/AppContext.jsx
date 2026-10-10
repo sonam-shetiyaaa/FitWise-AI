@@ -115,7 +115,7 @@ export const AppProvider = ({ children }) => {
       localStorage.removeItem('fitwise_gemini_api_key');
       const fallback = import.meta.env.VITE_GEMINI_API_KEY || "";
       setGeminiApiKey(fallback);
-      showToast("Reset to default Gemini API key.", "info");
+      showToast("Reset to environment Gemini API key.", "info");
     }
   };
 
@@ -643,9 +643,9 @@ Core Directives & Behavioral Tuning:
     if (activeKey) {
       const modelsToTry = [
         "gemini-3.5-flash-lite",
-        "gemini-3.8-flash",
         "gemini-flash-latest",
-        "gemini-3.5-flash"
+        "gemini-3.5-flash",
+        "gemini-3.8-flash"
       ];
 
       const contents = [];
