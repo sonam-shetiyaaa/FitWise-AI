@@ -1,51 +1,60 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap');
 
 :root {
-  /* NutriFit Theme - Sleek Midnight & Vibrant Emerald */
-  --bg-primary: #090e0c;
-  --bg-secondary: #0d1410;
-  --bg-sidebar: #0a0f0d;
-  --bg-card: #111815;
-  --bg-card-hover: #151e1a;
-  --bg-card-solid: #111815;
-  --bg-glass: rgba(17, 24, 21, 0.7);
-  --bg-input: #121915;
+  /* Apple iOS Dark Mode & Sleek Emerald Theme */
+  --bg-primary: #000000;
+  --bg-secondary: #0a0a0c;
+  --bg-sidebar: rgba(18, 20, 22, 0.82);
+  --bg-card: rgba(28, 28, 30, 0.72);
+  --bg-card-hover: rgba(44, 44, 46, 0.82);
+  --bg-card-solid: #1c1c1e;
+  --bg-glass: rgba(28, 28, 30, 0.65);
+  --bg-input: rgba(118, 118, 128, 0.2);
 
-  --border-subtle: #19241e;
-  --border-strong: #202d26;
-  --border-glow: #10b981;
-  --border-accent: rgba(16, 185, 129, 0.4);
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.16);
+  --border-glow: #30D158;
+  --border-accent: rgba(48, 209, 88, 0.35);
 
-  /* Primary Emerald */
-  --primary: #10b981;
+  /* Apple iOS System Palette */
+  --primary: #30D158;
   --primary-light: #34d399;
-  --primary-dark: #059669;
-  --primary-glow: rgba(16, 185, 129, 0.28);
+  --primary-dark: #24ad47;
+  --primary-glow: rgba(48, 209, 88, 0.25);
+
+  --ios-green: #30D158;
+  --ios-blue: #0A84FF;
+  --ios-orange: #FF9F0A;
+  --ios-red: #FF453A;
+  --ios-teal: #64D2FF;
+  --ios-indigo: #5E5CE6;
+  --ios-card: rgba(28, 28, 30, 0.75);
+  --ios-card-border: rgba(255, 255, 255, 0.12);
 
   /* Functional Macro Accents */
-  --macro-protein: #10b981;
-  --macro-carbs: #eab308;
-  --macro-fats: #f87171;
+  --macro-protein: #30D158;
+  --macro-carbs: #FF9F0A;
+  --macro-fats: #FF453A;
 
-  /* Typography */
+  /* Typography - Apple SF Pro Stack */
   --text-main: #f1f5f9;
-  --text-muted: #94a3b8;
-  --text-dim: #64748b;
+  --text-muted: #8e8e93;
+  --text-dim: #636366;
   --text-white: #ffffff;
 
   /* Shadows & Glow */
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.35);
-  --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.45);
-  --shadow-lg: 0 10px 35px rgba(0, 0, 0, 0.6);
-  --shadow-glow: 0 0 20px rgba(16, 185, 129, 0.28);
-  --shadow-glow-selected: 0 0 18px rgba(16, 185, 129, 0.22);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.55);
+  --shadow-lg: 0 14px 45px rgba(0, 0, 0, 0.75);
+  --shadow-glow: 0 0 22px rgba(48, 209, 88, 0.3);
+  --shadow-glow-selected: 0 0 20px rgba(48, 209, 88, 0.25);
 
-  /* Fonts */
-  --font-heading: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  /* Fonts - Authentic Apple SF Pro system fonts */
+  --font-heading: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "SF Pro", -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "SF Pro", -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 
   /* Transitions */
-  --ease-smooth: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-smooth: all 0.2s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 /* Global Reset */
@@ -102,50 +111,51 @@ a:hover {
   color: var(--text-white);
 }
 
-/* Custom Scrollbars */
+/* Custom Apple iOS Minimal Scrollbars */
 ::-webkit-scrollbar {
-  width: 7px;
-  height: 7px;
+  width: 5px;
+  height: 5px;
 }
 ::-webkit-scrollbar-track {
-  background: var(--bg-primary);
+  background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #1f293d;
+  background: rgba(255, 255, 255, 0.22);
   border-radius: 999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--primary-dark);
+  background: rgba(255, 255, 255, 0.45);
 }
 
-/* Glass Card Utility */
+/* Apple iOS Glass Panel Utility */
 .glass-panel {
   background: var(--bg-card);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--border-subtle);
-  border-radius: 16px;
-  box-shadow: var(--shadow-md);
+  backdrop-filter: blur(28px) saturate(190%);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  border: 0.5px solid var(--border-subtle);
+  border-radius: 22px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.08);
   transition: var(--ease-smooth);
 }
 
 .glass-panel:hover {
-  border-color: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 
 .glass-panel-glow {
   background: var(--bg-card);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--border-subtle);
-  border-radius: 16px;
-  box-shadow: 0 0 25px rgba(16, 185, 129, 0.12);
+  backdrop-filter: blur(28px) saturate(190%);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  border: 0.5px solid var(--border-subtle);
+  border-radius: 22px;
+  box-shadow: 0 0 25px rgba(48, 209, 88, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.08);
   transition: var(--ease-smooth);
 }
 
 .glass-panel-glow:hover {
   border-color: var(--border-glow);
-  box-shadow: 0 0 35px rgba(16, 185, 129, 0.22);
+  box-shadow: 0 0 35px rgba(48, 209, 88, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
 /* Buttons */
@@ -361,4 +371,76 @@ button:active,
 body {
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
+
+/* ==========================================================================
+   Apple iOS Card, Widget & Acrylic Blur Aesthetics
+   ========================================================================== */
+.nutrifit-card {
+  background: var(--bg-card) !important;
+  backdrop-filter: blur(28px) saturate(190%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(190%) !important;
+  border: 0.5px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 24px !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+  transition: transform 0.2s cubic-bezier(0.32, 0.72, 0, 1), box-shadow 0.2s ease, border-color 0.2s ease !important;
+}
+
+.nutrifit-card:hover {
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.14) !important;
+}
+
+/* Apple iOS Segmented Control Tabs */
+.top-nav-items,
+.plans-filter-bar,
+.tabs-container {
+  background: rgba(118, 118, 128, 0.24) !important;
+  backdrop-filter: blur(24px) saturate(190%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(190%) !important;
+  border: 0.5px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 16px !important;
+}
+
+/* Apple iOS Grouped Input Fields */
+input[type="text"],
+input[type="number"],
+input[type="password"],
+input[type="email"],
+select,
+textarea {
+  background: rgba(118, 118, 128, 0.18) !important;
+  border: 0.5px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 12px !important;
+  color: #ffffff !important;
+  font-family: var(--font-sans) !important;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+input[type="password"]:focus,
+input[type="email"]:focus,
+select:focus,
+textarea:focus {
+  border-color: #30D158 !important;
+  box-shadow: 0 0 0 3px rgba(48, 209, 88, 0.25) !important;
+  outline: none !important;
+}
+
+/* Pure OLED Pitch Black Mode */
+body.oled-pure-black,
+body.oled-pure-black #root,
+body.oled-pure-black .nutrifit-app-shell,
+body.oled-pure-black .nutrifit-root-wrapper,
+body.oled-pure-black .nutrifit-main-content,
+body.oled-pure-black .nutrifit-dashboard {
+  background: #000000 !important;
+  background-image: none !important;
+}
+
+body.oled-pure-black .nutrifit-card {
+  background: rgba(18, 18, 20, 0.9) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
 

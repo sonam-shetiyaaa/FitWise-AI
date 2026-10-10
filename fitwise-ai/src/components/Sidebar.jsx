@@ -270,6 +270,7 @@ export const Sidebar = () => {
           justify-content: center;
         }
 
+
         .top-user-email {
           font-size: 0.82rem;
           color: #94a3b8;
