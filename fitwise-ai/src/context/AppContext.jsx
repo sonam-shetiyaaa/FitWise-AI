@@ -119,16 +119,53 @@ export const AppProvider = ({ children }) => {
     }
   };
 
+  // Default demo workout split plan matching Screenshot 4
+  const demoSplitPlanData = {
+    id: "plan-split-5day",
+    title: "5-Day Muscle Hypertrophy Split",
+    type: "Workout",
+    date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+    description: "Upper/Lower frequency with optimal rest and progressive overload targets.",
+    schedule: [
+      { day: "Day 1", focus: "Upper Body A", details: "Barbell/DB Bench Press, Chest-Supported Rows, Overhead Press, Lat Pulldowns, Bicep/Tricep supersets." },
+      { day: "Day 2", focus: "Lower Body A", details: "Barbell Back Squats or Leg Press, Romanian Deadlifts (RDLs), Walking Lunges, Calf Raises, Core work." },
+      { day: "Day 3", focus: "Rest & Recovery", details: "Light walking, mobility work, and hitting your 130g protein target." },
+      { day: "Day 4", focus: "Upper Body B", details: "Incline DB Press, Seated Cable Rows, Lateral Raises, Cable Flyes, Hammer Curls, Dips." },
+      { day: "Day 5", focus: "Lower Body B", details: "Bulgarian Split Squats, Leg Extensions, Seated Leg Curls, Glute Bridges, Calf Raises." },
+    ],
+    footerPrompt: "What would you like to tackle next? We can map out a high-calorie muscle-building meal plan or dive deeper into your progressive overload strategy!"
+  };
+
+  const demoMealPlanData = {
+    id: "plan-meal-high-protein-1",
+    title: "High-Protein Balanced Fuel Plan",
+    type: "Meal",
+    date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+    description: "Calibrated for lean muscle hypertrophy and sustained energy across 4 daily meals (~170g protein, 2400 kcal).",
+    schedule: [
+      { day: "Breakfast", focus: "Morning Anabolism", details: "3 Whole Eggs + 2 Egg Whites, 1 cup Rolled Oats with berries, 1 scoop Whey Isolate (48g protein, 550 kcal)." },
+      { day: "Lunch", focus: "Midday Power Bowl", details: "200g Grilled Chicken Breast or Paneer, 1.5 cups Brown Rice or Quinoa, Steamed Broccoli & Olive Oil (52g protein, 680 kcal)." },
+      { day: "Pre-Workout Snack", focus: "Fuel & Bloodflow", details: "1 Banana with 2 tbsp Peanut Butter, 1 cup Greek Yogurt (22g protein, 380 kcal)." },
+      { day: "Dinner", focus: "Overnight Recovery", details: "180g Salmon or Tofu Steak, Baked Sweet Potato, Mixed Green Salad with Avocado (48g protein, 620 kcal)." },
+    ],
+    footerPrompt: "Hits your target macronutrients cleanly! Would you like a customized hydration or snack adjustment?"
+  };
+
+  const defaultInitialPlans = [demoSplitPlanData, demoMealPlanData];
+
   // Saved Plans state (for Meal & Workout Plans)
   const [savedPlans, setSavedPlans] = useState(() => {
     try {
       const saved = localStorage.getItem('nutrifit_saved_plans_v1');
-      if (saved) return JSON.parse(saved);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
     } catch (e) { }
-    return [];
+    return defaultInitialPlans;
   });
 
-  const addSavedPlan = (plan) => {
+  const addSavedPlan = (plan, navigateImmediately = false) => {
     setSavedPlans((prev) => {
       const exists = prev.some((p) => p.id === plan.id || p.title === plan.title);
       if (exists) return prev;
@@ -138,7 +175,13 @@ export const AppProvider = ({ children }) => {
       } catch (e) { }
       return updated;
     });
-    showToast("Saved to My Plans!", "success");
+    showToast("Saved to My Plans! Tap to open.", "success", {
+      onClick: () => navigateTo('plans'),
+      actionLabel: "View"
+    });
+    if (navigateImmediately) {
+      navigateTo('plans');
+    }
   };
 
   const deleteSavedPlan = (planId) => {
@@ -152,19 +195,50 @@ export const AppProvider = ({ children }) => {
     showToast("Plan removed from My Plans.", "info");
   };
 
-  // Default demo workout split plan matching Screenshot 4
-  const demoSplitPlanData = {
-    id: "plan-split-5day",
-    title: "5-Day Muscle Hypertrophy Split",
-    type: "Workout",
-    schedule: [
-      { day: "Day 1", focus: "Upper Body A", details: "Barbell/DB Bench Press, Chest-Supported Rows, Overhead Press, Lat Pulldowns, Bicep/Tricep supersets." },
-      { day: "Day 2", focus: "Lower Body A", details: "Barbell Back Squats or Leg Press, Romanian Deadlifts (RDLs), Walking Lunges, Calf Raises, Core work." },
-      { day: "Day 3", focus: "Rest & Recovery", details: "Light walking, mobility work, and hitting your 130g protein target." },
-      { day: "Day 4", focus: "Upper Body B", details: "Incline DB Press, Seated Cable Rows, Lateral Raises, Cable Flyes, Hammer Curls, Dips." },
-      { day: "Day 5", focus: "Lower Body B", details: "Bulgarian Split Squats, Leg Extensions, Seated Leg Curls, Glute Bridges, Calf Raises." },
-    ],
-    footerPrompt: "What would you like to tackle next? We can map out a high-calorie muscle-building meal plan or dive deeper into your progressive overload strategy!"
+  // Open saved plan directly in AI Coach chat
+  const openPlanInChat = (plan) => {
+    if (!plan) return;
+
+    let targetSession = chatSessions.find((s) =>
+      s.messages?.some(
+        (m) =>
+          m.id === plan.id ||
+          m.plan?.id === plan.id ||
+          (plan.fullText && m.text === plan.fullText)
+      )
+    );
+
+    if (targetSession) {
+      setCurrentSessionId(targetSession.id);
+    } else {
+      const targetSessionId = currentSessionId || chatSessions[0]?.id || "demo-chat-1";
+      const targetSess = chatSessions.find((s) => s.id === targetSessionId) || chatSessions[0];
+      if (targetSess) {
+        const msgExists = targetSess.messages?.some(
+          (m) => m.id === plan.id || (plan.fullText && m.text === plan.fullText)
+        );
+        if (!msgExists) {
+          const chatMsg = {
+            id: plan.id || `m-${Date.now()}`,
+            sender: "assistant",
+            text: plan.fullText || `Here is your saved **${plan.title}** protocol:`,
+            plan: plan.schedule ? plan : undefined,
+            timestamp: plan.date || new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          };
+          setChatSessions((prev) =>
+            prev.map((s) =>
+              s.id === targetSess.id
+                ? { ...s, messages: [...s.messages, chatMsg] }
+                : s
+            )
+          );
+        }
+        setCurrentSessionId(targetSess.id);
+      }
+    }
+
+    navigateTo('coach');
+    showToast(`Showing "${plan.title}" in AI Coach!`, 'info');
   };
 
   const defaultDemoMessage = {
@@ -222,11 +296,13 @@ export const AppProvider = ({ children }) => {
   // Toast Notification State
   const [toast, setToast] = useState(null);
 
-  const showToast = (message, type = 'success') => {
-    setToast({ message, type, id: Date.now() });
+  const showToast = (message, type = 'success', options = {}) => {
+    const onClick = typeof options === 'function' ? options : options?.onClick;
+    const actionLabel = typeof options === 'object' ? options?.actionLabel : null;
+    setToast({ message, type, id: Date.now(), onClick, actionLabel });
     setTimeout(() => {
       setToast(null);
-    }, 3800);
+    }, 4500);
   };
 
   const getPageTitleAndPath = (page) => {
@@ -884,6 +960,7 @@ Core Directives & Behavioral Tuning:
         savedPlans,
         addSavedPlan,
         deleteSavedPlan,
+        openPlanInChat,
         geminiApiKey,
         saveGeminiApiKey,
         authModalOpen,

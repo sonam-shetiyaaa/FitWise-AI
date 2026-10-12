@@ -12,9 +12,19 @@ export const IosNotificationBanner = ({ toast, onDismiss }) => {
 
   if (!toast) return null;
 
+  const handleBannerClick = () => {
+    if (toast?.onClick) {
+      toast.onClick();
+    }
+    onDismiss?.();
+  };
+
   return (
     <div className="ios-banner-container" role="status" aria-live="polite">
-      <div className="ios-glass-banner" onClick={onDismiss}>
+      <div
+        className={`ios-glass-banner ${toast?.onClick ? 'is-clickable' : ''}`}
+        onClick={handleBannerClick}
+      >
         {/* Top App Identity Row */}
         <div className="ios-banner-top">
           <div className="ios-banner-app">
@@ -47,6 +57,9 @@ export const IosNotificationBanner = ({ toast, onDismiss }) => {
           {toast.type === 'info' && <Info size={16} className="text-cyan banner-icon" />}
           {toast.type === 'error' && <AlertCircle size={16} className="text-danger banner-icon" />}
           <span className="ios-banner-text">{toast.message}</span>
+          {toast.actionLabel && (
+            <span className="ios-banner-action-pill">{toast.actionLabel} &rarr;</span>
+          )}
         </div>
       </div>
 
@@ -180,6 +193,21 @@ export const IosNotificationBanner = ({ toast, onDismiss }) => {
           font-weight: 600;
           color: #ffffff;
           line-height: 1.4;
+          flex: 1;
+        }
+
+        .ios-banner-action-pill {
+          background: #10b981;
+          color: #042013;
+          font-family: var(--font-heading);
+          font-size: 0.72rem;
+          font-weight: 800;
+          padding: 3px 9px;
+          border-radius: 9999px;
+          white-space: nowrap;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
         }
       `}</style>
     </div>

@@ -5,7 +5,8 @@ import {
   Plus,
   Check,
   ImagePlus,
-  X
+  X,
+  ArrowRight
 } from 'lucide-react';
 
 export const ChatbotPage = () => {
@@ -14,7 +15,9 @@ export const ChatbotPage = () => {
     createNewChat,
     isAiTyping,
     sendChatMessage,
-    addSavedPlan
+    addSavedPlan,
+    savedPlans = [],
+    navigateTo
   } = useApp();
 
   const [inputText, setInputText] = useState('');
@@ -78,9 +81,16 @@ export const ChatbotPage = () => {
   // Save free-form assistant meal or workout advice
   const handleSaveGenericPlan = (msg) => {
     const text = msg.text || '';
-    // Extract title from first markdown header
-    const headerMatch = text.match(/###\s+\*?\*?([^\n*#]+)\*?\*?/);
-    const extractedTitle = headerMatch ? headerMatch[1].trim() : "Custom Nutrition & Fitness Protocol";
+    const cleanedText = cleanMarkdown(text);
+
+    // Extract title from headers or first strong title
+    const headerMatch =
+      cleanedText.match(/###\s+\*?\*?([^\n*#]+)\*?\*?/) ||
+      cleanedText.match(/##\s+\*?\*?([^\n*#]+)\*?\*?/) ||
+      cleanedText.match(/\*\*([^*\n]{4,50})\*\*/);
+    const extractedTitle = headerMatch
+      ? headerMatch[1].replace(/[#*`_]/g, '').replace(/[:\-–]/g, '').trim()
+      : "Custom Fitness Protocol";
 
     const isMeal =
       text.toLowerCase().includes('meal') ||
@@ -88,14 +98,36 @@ export const ChatbotPage = () => {
       text.toLowerCase().includes('diet') ||
       text.toLowerCase().includes('calorie') ||
       text.toLowerCase().includes('protein') ||
+      text.toLowerCase().includes('breakfast') ||
+      text.toLowerCase().includes('dinner') ||
       text.toLowerCase().includes('snack');
+
+    // Extract structured schedule/days if formatted with Day 1, Day 2 etc. or Meal items
+    const schedule = [];
+    const dayMatches = [...cleanedText.matchAll(/\*\*(Day\s*\d+|Breakfast|Lunch|Dinner|Snacks?)[^*]*\*\*[:\s]*([^\n]+(?:\n(?!\*\*|\#)[^\n]+)*)/gi)];
+    if (dayMatches.length > 0) {
+      dayMatches.forEach((m) => {
+        schedule.push({
+          day: m[1].replace(/[#*`_]/g, '').trim(),
+          focus: isMeal ? "Nutritional Focus" : "Training Target",
+          details: m[2].replace(/[#*`_]/g, '').trim().replace(/\n+/g, ' ')
+        });
+      });
+    }
+
+    const cleanDesc = text
+      .replace(/[#*`_]/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
 
     const newPlan = {
       id: msg.id,
       title: extractedTitle,
       type: isMeal ? "Meal" : "Workout",
       date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-      description: text.slice(0, 180) + '...'
+      description: cleanDesc.length > 180 ? cleanDesc.slice(0, 180) + '...' : cleanDesc,
+      fullText: cleanedText,
+      schedule: schedule.length > 0 ? schedule : undefined
     };
 
     addSavedPlan(newPlan);
@@ -106,10 +138,18 @@ export const ChatbotPage = () => {
   const cleanMarkdown = (raw) => {
     if (!raw) return '';
     return raw
-      .replace(/([^\n])\s*(#{2,4}\s)/g, '$1\n\n$2')
+      .replace(/([^\n])\s*(#{1,6}\s)/g, '$1\n\n$2')
       .replace(/([^\n])\s*(---|—{2,})\s*/g, '$1\n\n---\n\n')
-      .replace(/([^\n])\s*(\*\s+[A-Z])/g, '$1\n$2')
-      .replace(/([^\n])\s*(\d+\.\s+[A-Z])/g, '$1\n$2')
+      .replace(/\s+\*\s+\*\*/g, '\n* **')
+      .replace(/\s+-\s+\*\*/g, '\n- **')
+      .replace(/\s+•\s+\*\*/g, '\n* **')
+      .replace(/\s+\*\s+\*(Focus|Note|Target|Tip|Rest|Cues?):\*/gi, ' • $1:')
+      .replace(/\s+\*\s+\*\*(Focus|Note|Target|Tip|Rest|Cues?):\*\*/gi, ' • $1:')
+      .replace(/\s+-\s+\*(Focus|Note|Target|Tip|Rest|Cues?):\*/gi, ' • $1:')
+      .replace(/\s+-\s+\*\*(Focus|Note|Target|Tip|Rest|Cues?):\*\*/gi, ' • $1:')
+      .replace(/([^\n])\s*(\*\s+[A-Za-z0-9])/g, '$1\n* $2')
+      .replace(/([^\n])\s*(-\s+[A-Za-z0-9])/g, '$1\n- $2')
+      .replace(/([^\n])\s*(\d+\.\s+[A-Za-z0-9])/g, '$1\n$2')
       .replace(/\*{4,}/g, '**')
       .trim();
   };
@@ -133,7 +173,13 @@ export const ChatbotPage = () => {
         }
         return `<strong>${p1}</strong>`;
       })
-      .replace(/\*(.*?)\*/g, '<em>$1</em>');
+      .replace(/\*(.*?)\*/g, '<em>$1</em>')
+      .replace(/_([^_]+)_/g, '<em>$1</em>')
+      .replace(/^[\*\-•]\s*/, '')
+      .replace(/\s\*\s/g, ' • ')
+      .replace(/#{1,6}\s*/g, '')
+      .replace(/[*#]/g, '')
+      .trim();
   };
 
   // Render markdown with headers, bullet points, numbered items, and dividers
@@ -253,7 +299,11 @@ export const ChatbotPage = () => {
         {chatMessages.map((msg) => {
           const isAssistant = msg.sender === 'assistant';
           const plan = msg.plan;
-          const isPlanSaved = (plan && savedPlanIds.has(plan.id)) || savedPlanIds.has(msg.id);
+          const isPlanSaved = Boolean(
+            savedPlanIds.has(msg.id) ||
+            (plan && (savedPlanIds.has(plan.id) || savedPlans.some((p) => p.id === plan.id || p.title?.toLowerCase() === plan.title?.toLowerCase()))) ||
+            savedPlans.some((p) => p.id === msg.id)
+          );
 
           return (
             <div
@@ -321,26 +371,29 @@ export const ChatbotPage = () => {
                 {/* Save to My Plans Button for Assistant responses with actionable plans */}
                 {isAssistant && (
                   <div className="plan-actions-row">
-                    <button
-                      onClick={() => {
-                        if (plan) handleSavePlan(plan);
-                        else handleSaveGenericPlan(msg);
-                      }}
-                      className={`btn-save-plan ${isPlanSaved ? 'saved' : ''}`}
-                      disabled={isPlanSaved}
-                    >
-                      {isPlanSaved ? (
-                        <>
-                          <Check size={15} />
-                          <span>Saved to My Plans</span>
-                        </>
-                      ) : (
-                        <>
-                          <Plus size={15} />
-                          <span>Save to My Plans</span>
-                        </>
-                      )}
-                    </button>
+                    {isPlanSaved ? (
+                      <button
+                        onClick={() => navigateTo('plans')}
+                        className="btn-save-plan saved is-saved-link"
+                        title="Click to view this plan in Meal & Workout Plans"
+                      >
+                        <Check size={15} />
+                        <span>Saved to My Plans</span>
+                        <ArrowRight size={14} className="saved-arrow" />
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => {
+                          if (plan) handleSavePlan(plan);
+                          else handleSaveGenericPlan(msg);
+                        }}
+                        className="btn-save-plan"
+                        title="Save this to Meal & Workout Plans"
+                      >
+                        <Plus size={15} />
+                        <span>Save to My Plans</span>
+                      </button>
+                    )}
                   </div>
                 )}
               </div>
@@ -702,9 +755,25 @@ export const ChatbotPage = () => {
 
         .btn-save-plan.saved {
           color: #10b981;
-          border-color: #10b981;
+          border-color: rgba(16, 185, 129, 0.4);
           background: rgba(16, 185, 129, 0.08);
-          cursor: default;
+          cursor: pointer;
+        }
+
+        .btn-save-plan.saved:hover {
+          background: rgba(16, 185, 129, 0.16);
+          border-color: #10b981;
+          color: #34d399;
+          transform: translateY(-1px);
+        }
+
+        .saved-arrow {
+          color: #10b981;
+          transition: transform 0.15s ease;
+        }
+
+        .btn-save-plan.saved:hover .saved-arrow {
+          transform: translateX(3px);
         }
 
         /* Suggested Prompts Row */
