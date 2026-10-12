@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import {
   ArrowUp,
@@ -14,9 +14,7 @@ export const ChatbotPage = () => {
     createNewChat,
     isAiTyping,
     sendChatMessage,
-    user,
-    addSavedPlan,
-    showToast
+    addSavedPlan
   } = useApp();
 
   const [inputText, setInputText] = useState('');
@@ -110,7 +108,7 @@ export const ChatbotPage = () => {
     return raw
       .replace(/([^\n])\s*(#{2,4}\s)/g, '$1\n\n$2')
       .replace(/([^\n])\s*(---|—{2,})\s*/g, '$1\n\n---\n\n')
-      .replace(/([^\n])\s*(\*\s+[A-Z])/g, '$1\n* $2')
+      .replace(/([^\n])\s*(\*\s+[A-Z])/g, '$1\n$2')
       .replace(/([^\n])\s*(\d+\.\s+[A-Z])/g, '$1\n$2')
       .replace(/\*{4,}/g, '**')
       .trim();
@@ -153,7 +151,7 @@ export const ChatbotPage = () => {
             {currentList.map((item, idx) => (
               <li key={idx} className="chat-formatted-li">
                 <span className="li-dot">•</span>
-                <span dangerouslySetInnerHTML={{ __html: formatInline(item) }} />
+                <span className="chat-formatted-li-text" dangerouslySetInnerHTML={{ __html: formatInline(item) }} />
               </li>
             ))}
           </ul>
@@ -577,6 +575,11 @@ export const ChatbotPage = () => {
           font-size: 0.94rem;
           color: #cbd5e1;
           line-height: 1.55;
+        }
+
+        .chat-formatted-li-text {
+          flex: 1;
+          min-width: 0;
         }
 
         .li-dot {

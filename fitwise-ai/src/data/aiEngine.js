@@ -80,6 +80,39 @@ I'm your **FitWise AI Assistant & Coach**. I'm tuned to answer **any question** 
 What question or topic would you like to explore today?`;
   }
 
+  if (lower.includes('workout split') || lower.includes('4-day') || lower.includes('4 day')) {
+    return `Absolutely, ${name}! For gaining muscle, a four-day upper/lower split is a practical choice because each major muscle group is trained twice per week with enough recovery between sessions.
+
+**Day 1 - Upper body**
+- Barbell bench press: 4 sets of 6-8 reps
+- Barbell row: 4 sets of 6-8 reps
+- Overhead press: 3 sets of 8-10 reps
+- Pull-ups or lat pulldowns: 3 sets of 8-12 reps
+- Triceps pressdowns: 3 sets of 10-12 reps
+
+**Day 2 - Lower body**
+- Back squat: 4 sets of 6-8 reps
+- Romanian deadlift: 3 sets of 8-10 reps
+- Walking lunges: 3 sets of 10 reps per leg
+- Standing calf raises: 4 sets of 12-15 reps
+
+**Day 3 - Upper body**
+- Incline dumbbell press: 3 sets of 8-10 reps
+- Lat pulldown: 3 sets of 8-12 reps
+- Seated cable row: 3 sets of 10-12 reps
+- Lateral raises: 4 sets of 12-15 reps
+- Dumbbell curls: 3 sets of 10-12 reps
+
+**Day 4 - Lower body**
+- Deadlift or hip thrust: 3 sets of 5-8 reps
+- Leg press: 3 sets of 10-12 reps
+- Bulgarian split squat: 3 sets of 8-10 reps per leg
+- Hamstring curl: 3 sets of 10-15 reps
+- Hanging leg raises: 3 sets of 10-15 reps
+
+Leave at least one rest day after the second session when possible. Use a weight that leaves one or two good reps in reserve, and add a small amount of weight or an extra rep when you can complete every set with solid form.`;
+  }
+
   // =========================================================================
   // 3. GENERAL SCIENCE, PHYSICS, CHEMISTRY, BIOLOGY & ASTRONOMY
   // =========================================================================

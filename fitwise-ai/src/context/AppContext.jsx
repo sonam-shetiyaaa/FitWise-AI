@@ -630,7 +630,8 @@ Core Directives & Behavioral Tuning:
    - Food/meal photos: estimate calories, break down macronutrients, and analyze nutritional balance.
    - Gym machine/exercise photos: identify equipment, target muscles, setup steps, and biomechanical safety cues.
    - General images: describe and analyze the visual content helpfully and accurately.
-7. FORMATTING & TONE: Warm, articulate, encouraging, and intellectually rigorous. Use clean Markdown formatting with clear headings, bold key terms, and bullet points for effortless readability.`;
+7. FORMATTING & TONE: Sound like a natural, helpful Gemini-style fitness coach. Start with a direct conversational answer and use the user's name only when it feels natural. Keep the response proportionate to the question; do not restate the prompt.
+8. FITNESS RESPONSE STYLE: For workout plans, give a short introduction followed by a simple day-by-day split with exercises, sets, and reps, then a brief recovery or progression note. Use at most one short heading. Avoid dramatic titles, excessive emojis, horizontal rules, tables, blockquotes, and words like "protocol", "architecture", or "blueprint".`;
 
     const activeKey = (
       localStorage.getItem('fitwise_gemini_api_key') ||
@@ -785,9 +786,8 @@ Core Directives & Behavioral Tuning:
           schedule: [
             { day: "Day 1", focus: "Upper Body (Power)", details: "Barbell Bench Press 4x6, Barbell Rows 4x6, Overhead Press 3x8, Pull-ups 3x8, Skull Crushers 3x10." },
             { day: "Day 2", focus: "Lower Body (Quad Focus)", details: "Back Squats 4x6, Romanian Deadlifts 3x8, Walking Lunges 3x10/side, Standing Calf Raises 4x12." },
-            { day: "Day 3", focus: "Rest & Active Recovery", details: "Light cardio, core mobility, and hitting your 130g protein target." },
-            { day: "Day 4", focus: "Upper Body (Hypertrophy)", details: "Incline DB Press 3x10, Lat Pulldowns 3x10, Lateral Raises 4x12, Cable Flyes 3x12, Incline Curls 3x12." },
-            { day: "Day 5", focus: "Lower Body (Posterior Focus)", details: "Deadlifts 3x5, Leg Press 3x10, Hamstring Curls 3x12, Hanging Leg Raises 3x15." },
+            { day: "Day 3", focus: "Upper Body (Hypertrophy)", details: "Incline DB Press 3x10, Lat Pulldowns 3x10, Lateral Raises 4x12, Cable Flyes 3x12, Incline Curls 3x12." },
+            { day: "Day 4", focus: "Lower Body (Posterior Focus)", details: "Deadlifts 3x5, Leg Press 3x10, Hamstring Curls 3x12, Hanging Leg Raises 3x15." },
           ],
           footerPrompt: "What would you like to tackle next? We can map out a high-protein meal plan or customize set/rep progressions!"
         };

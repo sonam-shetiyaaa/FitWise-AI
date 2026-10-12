@@ -41,6 +41,39 @@ function getSmartFitnessResponse(message, userContext = {}, image = null) {
         return `Hello ${name}! I'm your **FitWise AI Coach**. How can I help you optimize your training, nutrition, or recovery toward your **${goal}** goals today?`;
     }
 
+    if (q.includes("workout split") || q.includes("4-day") || q.includes("4 day")) {
+        return `Absolutely, ${name}! For gaining muscle, a four-day upper/lower split is a practical choice because each major muscle group is trained twice per week with enough recovery between sessions.
+
+**Day 1 - Upper body**
+- Barbell bench press: 4 sets of 6-8 reps
+- Barbell row: 4 sets of 6-8 reps
+- Overhead press: 3 sets of 8-10 reps
+- Pull-ups or lat pulldowns: 3 sets of 8-12 reps
+- Triceps pressdowns: 3 sets of 10-12 reps
+
+**Day 2 - Lower body**
+- Back squat: 4 sets of 6-8 reps
+- Romanian deadlift: 3 sets of 8-10 reps
+- Walking lunges: 3 sets of 10 reps per leg
+- Standing calf raises: 4 sets of 12-15 reps
+
+**Day 3 - Upper body**
+- Incline dumbbell press: 3 sets of 8-10 reps
+- Lat pulldown: 3 sets of 8-12 reps
+- Seated cable row: 3 sets of 10-12 reps
+- Lateral raises: 4 sets of 12-15 reps
+- Dumbbell curls: 3 sets of 10-12 reps
+
+**Day 4 - Lower body**
+- Deadlift or hip thrust: 3 sets of 5-8 reps
+- Leg press: 3 sets of 10-12 reps
+- Bulgarian split squat: 3 sets of 8-10 reps per leg
+- Hamstring curl: 3 sets of 10-15 reps
+- Hanging leg raises: 3 sets of 10-15 reps
+
+Leave at least one rest day after the second session when possible. Use a weight that leaves one or two good reps in reserve, and add a small amount of weight or an extra rep when you can complete every set with solid form.`;
+    }
+
     if (q.includes("tired") || q.includes("fatigue") || q.includes("exhaust") || q.includes("sleepy") || q.includes("no energy") || q.includes("low energy")) {
         return `### 🔋 Rest & Energy Recovery Protocol\n\nHey ${name}, listening to your body is just as important as lifting heavy. Here is how to handle feeling tired today:\n\n1. **Mild Sluggishness (Mental Fatigue)**: If you just need a boost, try a brisk 10-minute walk, 500ml cold water with electrolytes, and light dynamic mobility.\n2. **Physical Exhaustion**: If your joints feel heavy or you got poor sleep, take an **Active Recovery Day** (gentle stretching, light foam rolling) instead of heavy resistance.\n3. **Sleep & Nutrition Check**: Ensure you hit 7–8 hours of quality sleep tonight and have a balanced meal with complex carbs and quality protein.\n\n*Remember: Muscles grow and recover during rest, not during workouts!*`;
     }
@@ -446,7 +479,8 @@ Core Directives & Behavioral Tuning:
    - Food/meal photos: Identify ingredients, estimate calories/macros, and comment on nutritional density.
    - Gym machine/exercise photos: Identify equipment/movement, explain proper biomechanics, pin adjustments, and form cues.
    - General images: Describe and analyze the content accurately and helpfully.
-7. TONE & FORMATTING: Warm, encouraging, articulate, and intelligent. Use clean markdown formatting (clear headings, bullet points, bold key terms) so every response is delightful and easy to read.`;
+7. TONE & FORMATTING: Sound like a natural, helpful Gemini-style fitness coach. Start with a direct conversational answer and use the user's name only when it feels natural. Keep the response proportionate to the question; do not restate the prompt.
+8. FITNESS RESPONSE STYLE: For workout plans, give a short introduction followed by a simple day-by-day split with exercises, sets, and reps, then a brief recovery or progression note. Use at most one short heading. Avoid dramatic titles, excessive emojis, horizontal rules, tables, blockquotes, and words like "protocol", "architecture", or "blueprint".`;
 
         // Call Gemini Cloud API
         const geminiReply = await callGemini(contents, systemInstruction, modelName);
